@@ -109,3 +109,52 @@ export interface InjectAiEventRequest {
   sessionId?: string;
   status: AiFocusStatus;
 }
+
+export type AttendanceStatus = 'checked_in' | 'checked_out';
+export type CheckOutPurpose = 'continue_study' | 'break' | 'home' | 'other';
+
+export interface AttendanceRecord {
+  id: string;
+  userId: string;
+  checkInAt: string;
+  checkOutAt?: string;
+  status: AttendanceStatus;
+  purpose?: CheckOutPurpose;
+}
+
+export interface StudyPlan {
+  id: string;
+  userId: string;
+  title: string;
+  plannedDate: string;
+  sortOrder: number;
+  durationMinutes?: number;
+  completed: boolean;
+}
+
+export interface CheckInRequest {
+  userId: string;
+  checkInAt?: string;
+}
+
+export interface CheckOutRequest {
+  userId: string;
+  purpose: CheckOutPurpose;
+  checkOutAt?: string;
+}
+
+export interface CreateStudyPlanRequest {
+  userId: string;
+  title: string;
+  plannedDate: string;
+  durationMinutes?: number;
+  sortOrder?: number;
+}
+
+export interface UpdateStudyPlanRequest {
+  title?: string;
+  plannedDate?: string;
+  sortOrder?: number;
+  durationMinutes?: number;
+  completed?: boolean;
+}

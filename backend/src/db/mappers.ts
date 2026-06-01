@@ -1,4 +1,14 @@
-import type { Goal, GrowthState, Milestone, StudySession, User } from '@learners-high/shared';
+import type {
+  AttendanceRecord,
+  Goal,
+  GrowthState,
+  Milestone,
+  StudyPlan,
+  StudySession,
+  User,
+} from '@learners-high/shared';
+import type { AttendanceDocument } from './models/AttendanceRecord.js';
+import type { StudyPlanDocument } from './models/StudyPlan.js';
 import type { GoalDocument } from './models/Goal.js';
 import type { GrowthStateDocument } from './models/GrowthState.js';
 import type { MilestoneDocument } from './models/Milestone.js';
@@ -50,6 +60,29 @@ export function toGoalDto(doc: GoalDocument): Goal {
     currentValue: doc.currentValue ?? 0,
     rewardScore: doc.rewardScore,
     isCompleted: doc.isCompleted ?? false,
+  };
+}
+
+export function toAttendanceDto(doc: AttendanceDocument): AttendanceRecord {
+  return {
+    id: doc._id.toString(),
+    userId: doc.userId.toString(),
+    checkInAt: doc.checkInAt,
+    checkOutAt: doc.checkOutAt ?? undefined,
+    status: doc.status as AttendanceRecord['status'],
+    purpose: doc.purpose as AttendanceRecord['purpose'],
+  };
+}
+
+export function toStudyPlanDto(doc: StudyPlanDocument): StudyPlan {
+  return {
+    id: doc._id.toString(),
+    userId: doc.userId.toString(),
+    title: doc.title,
+    plannedDate: doc.plannedDate,
+    sortOrder: doc.sortOrder,
+    durationMinutes: doc.durationMinutes ?? undefined,
+    completed: doc.completed ?? false,
   };
 }
 

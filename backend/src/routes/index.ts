@@ -2,6 +2,8 @@ import { Router } from 'express';
 import * as studyController from '../controllers/studyController.js';
 import * as growthController from '../controllers/growthController.js';
 import * as userController from '../controllers/userController.js';
+import * as attendanceController from '../controllers/attendanceController.js';
+import * as planController from '../controllers/planController.js';
 
 export const apiRouter = Router();
 
@@ -10,6 +12,15 @@ apiRouter.get('/health', (_req, res) => {
 });
 
 apiRouter.get('/users/demo', userController.getDemoUser);
+
+apiRouter.post('/attendance/check-in', attendanceController.checkIn);
+apiRouter.post('/attendance/check-out', attendanceController.checkOut);
+apiRouter.get('/attendance/active/:userId', attendanceController.getActive);
+
+apiRouter.get('/plans', planController.listPlans);
+apiRouter.post('/plans', planController.createPlan);
+apiRouter.patch('/plans/:id', planController.updatePlan);
+apiRouter.delete('/plans/:id', planController.deletePlan);
 
 apiRouter.post('/study/session/start', studyController.startSession);
 apiRouter.post('/study/session/end', studyController.endSession);
