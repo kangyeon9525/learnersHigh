@@ -1,0 +1,31 @@
+---
+description: 세션 시작·종료 시 docs/ SSOT 문서 필독·갱신 워크플로우
+alwaysApply: true
+---
+
+# Documentation-first workflow
+
+## Session start (before any code change)
+
+Read in order:
+
+1. `docs/session_context.md` — "빠른 상태 보드" + 최신 세션 로그
+2. `docs/project_context.md` — 범위·제약·비목표
+3. `docs/architecture.md` — 계층·컨벤션·테스트 규칙
+4. `docs/acceptance.md` — 이번 작업 해당 DoD
+
+Conflict priority: **project_context > architecture > acceptance > session_context**
+
+## Session end (before reporting complete)
+
+1. Self-check relevant checkboxes in `docs/acceptance.md`
+2. Append new session log entry at top of `docs/session_context.md` (use template in §1)
+3. Update "빠른 상태 보드" (§2) if phase or blockers changed
+
+## Do not
+
+- Implement features outside `project_context.md` scope without explicit user approval
+- Skip session log when making non-trivial changes
+- Duplicate domain types outside `shared/src/types`
+
+Reference: root `CLAUDE.md`, `.cursorrules`

@@ -1,0 +1,35 @@
+---
+description: Backend 계층·Mongoose·정산·mock-ai 규칙
+globs: backend/**/*
+alwaysApply: false
+---
+
+# Backend rules
+
+## Layer (one direction only)
+
+```
+routes → controllers → services → db (Mongoose models)
+```
+
+- **controllers:** zod validation, map I/O. No business logic.
+- **services:** milestone/goal judgement, growth stage, `StudySessionResult` assembly.
+- **db:** Mongoose I/O only. Services access models via `db/`.
+
+## Study session end
+
+- Persist session → judge achievements/goals → apply score to lifetime + monthly growth (atomic)
+- Build `StudySessionResult` from **post-save DB state**
+- Never push achievement notifications during active session
+
+## Files
+
+- Suffixes: `.controller.ts`, `.service.ts`, `.model.ts`
+- Config: load env once in `config.ts`, not scattered `process.env`
+- Seeds: dummy data only in `seeds/`
+
+## Validation
+
+- Request bodies validated against shared DTO shapes (zod near controllers)
+
+See `docs/architecture.md` §1.3, §3.3, §8

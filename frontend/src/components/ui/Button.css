@@ -1,0 +1,75 @@
+.lh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.lh-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.lh-btn--sm {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.lh-btn--md {
+  padding: 0.6rem 1rem;
+  font-size: 0.9375rem;
+}
+
+.lh-btn--lg {
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+}
+
+.lh-btn--primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.lh-btn--primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.lh-btn--secondary {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border-color: var(--color-border);
+}
+
+.lh-btn--ghost {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border-soft);
+}
+
+.lh-btn--danger {
+  background: var(--color-warn);
+  color: #fff;
+}
+
+.lh-btn__spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: lh-btn-spin 0.7s linear infinite;
+}
+
+@keyframes lh-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

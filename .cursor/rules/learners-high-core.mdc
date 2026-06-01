@@ -1,0 +1,37 @@
+---
+description: 러너스하이 핵심 제품·기술 원칙 (집중 우선, 서버 권위, SSOT)
+alwaysApply: true
+---
+
+# Learners High — Core principles
+
+## 집중 우선
+
+- 학습 중: 집중/이탈 경고 + 타이머 자동 정지만
+- 학습 중 성취·퀘스트·성장 알림/모달 **절대 금지**
+- 학습 종료: `POST /api/study/session/end` → `StudySessionResult` → `frontend/src/components/result-modal/`
+- 정산 모달: 서버 확정 결과만 (낙관적 UI 금지)
+
+## 서버 권위
+
+- 점수·성취/목표 판정·성장 단계·종료 정산 → `backend/src/services/**` only
+- FE: render + API call + store update only
+
+## SSOT
+
+- Types: `shared/src/types` → `@learners-high/shared`
+- MongoDB collections: `users`, `studySessions`, `milestones`, `goals`, `growthStates`
+- `StudySessionResult`: response DTO only (no collection)
+
+## Prototype constraints
+
+- Real MongoDB + seeds (`backend/src/seeds/`)
+- Mock AI (`backend/src/mock-ai/`) replaces webcam
+- API returns **actual DB state**; atomic `$inc` / `findOneAndUpdate`
+
+## Terminology
+
+- Use: 성취, 목표, 성장 나무/화분, 정산 모달, 통합 대시보드, 보관함
+- Avoid: 게이미피케이션 용어
+
+Docs: `docs/project_context.md`, `docs/architecture.md`, `docs/acceptance.md`

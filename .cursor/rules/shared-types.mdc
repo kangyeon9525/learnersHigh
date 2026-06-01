@@ -1,0 +1,23 @@
+---
+description: shared/types SSOT 및 워크스페이스 타입 공유 규칙
+globs: shared/**/*
+alwaysApply: false
+---
+
+# Shared types (SSOT)
+
+- All domain interfaces live in `shared/src/types/`
+- Export via `@learners-high/shared`
+- Frontend and backend **import from shared** — never duplicate type definitions
+- Mongoose schemas in `backend/src/db/models/` must align with these types
+- `StudySessionResult`: annotate as response-only DTO (not a MongoDB collection)
+
+When adding/changing a field:
+
+1. Update `shared/src/types` first
+2. Update Mongoose schema
+3. Update mappers/DTO serialization
+4. Update API client types in `frontend/src/api/`
+5. Run `npm run build -w @learners-high/shared`
+
+See `docs/architecture.md` §1.1, §2

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "64:3",
+    "slug": "growth-garden-dashboard",
+    "file": "screens/growth-garden-dashboard.png",
+    "width": 1280,
+    "height": 1024
+  },
+  {
+    "id": "64:224",
+    "slug": "study-timer-focus-warning",
+    "file": "screens/study-timer-focus-warning.png",
+    "width": 1280,
+    "height": 1024
+  },
+  {
+    "id": "64:384",
+    "slug": "session-result-modal",
+    "file": "screens/session-result-modal.png",
+    "width": 1280,
+    "height": 1024
+  },
+  {
+    "id": "64:495",
+    "slug": "home-dashboard",
+    "file": "screens/home-dashboard.png",
+    "width": 1280,
+    "height": 1024
+  },
+  {
+    "id": "64:637",
+    "slug": "mypage-achievements",
+    "file": "screens/mypage-achievements.png",
+    "width": 1280,
+    "height": 1024
+  },
+  {
+    "id": "64:856",
+    "slug": "daily-report",
+    "file": "screens/daily-report.png",
+    "width": 1280,
+    "height": 1024
+  }
+]

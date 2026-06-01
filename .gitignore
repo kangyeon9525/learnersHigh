@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs & runtime
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test & coverage
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+storybook-static/
+design/figma-import/*.json
+!design/figma-import/screens-manifest.json
+
+# IDE / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.DS_Store
+Thumbs.db
+
+# Cursor / local AI (tracked: .cursorrules, .cursor/rules/)
+.cursor/mcp.json
+.cursor/*.local.*
+
+# Misc
+*.local
+.cache/
+.turbo/

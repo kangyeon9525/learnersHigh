@@ -1,0 +1,34 @@
+---
+description: Frontend React·Zustand·API·집중보호·Figma 규칙
+globs: frontend/**/*
+alwaysApply: false
+---
+
+# Frontend rules
+
+## Responsibilities
+
+- **Display only** — no score calculation, judgement, or growth stage logic
+- HTTP: **`src/api/`** exclusively (no fetch in components/pages)
+- Zustand (`src/stores/`): store **server responses**; derived values via selectors
+
+## Study flow UI
+
+- Timer/monitoring: `pages/TimerPage` — distracted warning stops timer
+- **No** achievement/quest toasts/modals while session active
+- End session → receive `StudySessionResult` → show `components/result-modal/`
+- Growth/mypage: `components/growth/`, `components/mypage/`
+
+## UX
+
+- Tablet landscape primary; `data-testid` on interactive elements
+- Always define loading / error / empty states
+- Figma + design tokens (see `docs/architecture.md` §6)
+- Shared components → Storybook with default/loading/error/empty variants
+
+## Optimistic UI
+
+- Allowed for non-settlement actions; reconcile with server (server wins)
+- **Settlement modal: never optimistic**
+
+See `docs/architecture.md` §3.2, `docs/acceptance.md` §2.3, §2.9

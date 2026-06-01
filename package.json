@@ -1,0 +1,45 @@
+{
+  "name": "learners-high",
+  "version": "0.1.0",
+  "private": true,
+  "description": "러너스하이(Learners High) — 학습 매니지먼트 플랫폼 모노레포",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared",
+    "e2e"
+  ],
+  "scripts": {
+    "dev": "concurrently -n backend,frontend,mock-ai -c blue,green,yellow \"npm run dev -w @learners-high/backend\" \"npm run dev -w @learners-high/frontend\" \"npm run mock-ai -w @learners-high/backend\"",
+    "dev:api": "npm run dev -w @learners-high/backend",
+    "dev:web": "npm run dev -w @learners-high/frontend",
+    "build": "npm run build -w @learners-high/shared && npm run build -w @learners-high/backend && npm run build -w @learners-high/frontend",
+    "seed": "npm run seed -w @learners-high/backend",
+    "mock-ai": "npm run mock-ai -w @learners-high/backend",
+    "test:e2e": "npm run test -w @learners-high/e2e",
+    "typecheck": "npm run typecheck -w @learners-high/shared && npm run typecheck -w @learners-high/backend && npm run typecheck -w @learners-high/frontend",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "storybook": "npm run storybook -w @learners-high/frontend",
+    "build-storybook": "npm run build-storybook -w @learners-high/frontend",
+    "check-db": "npm run check-db -w @learners-high/backend",
+    "figma:socket": "bun x cursor-talk-to-figma-socket",
+    "figma:import": "node scripts/figma-export-screens.mjs sanxzj25",
+    "verify:p0": "npm run typecheck && npm run lint && npm run build && npm run build-storybook && npm run check-db && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.28.0",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.28.0",
+    "eslint-config-prettier": "^10.1.5",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.1",
+    "ws": "^8.18.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

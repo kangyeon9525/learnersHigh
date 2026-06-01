@@ -1,0 +1,51 @@
+/**
+ * 디자인 토큰 — Figma Page 2 (Talk-to-Figma sanxzj25) 동기화.
+ * SSOT: docs/design-tokens.md · 참조 PNG: design/figma-import/screens/
+ */
+:root {
+  /* Color — Figma Learners High palette */
+  --color-bg: #fafaf8;
+  --color-surface: #ffffff;
+  --color-primary: #006d36;
+  --color-primary-dark: #005e2d;
+  --color-primary-soft: #f0fdf4;
+  --color-accent: #4ade80;
+  --color-accent-strong: #22c55e;
+  --color-text: #161d1f;
+  --color-text-secondary: #3d4a3e;
+  --color-muted: #6d7b6d;
+  --color-border: #bccabb;
+  --color-border-soft: #dde4e6;
+  --color-border-muted: #e8eff1;
+  --color-sidebar: #f4fafd;
+  --color-panel: #eef5f7;
+  --color-warn: #e76f51;
+  --color-garden-sky: #b7e4c7;
+  --color-garden-ground: #95d5b2;
+
+  /* Alias (legacy global.css) */
+  --bg: var(--color-bg);
+  --surface: var(--color-surface);
+  --primary: var(--color-primary);
+  --primary-soft: var(--color-primary-soft);
+  --text: var(--color-text);
+  --muted: var(--color-muted);
+  --warn: var(--color-warn);
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Radius & shadow */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius: var(--radius-md);
+  --shadow-card: 0 8px 24px rgba(22, 29, 31, 0.08);
+
+  /* Typography — Figma: Quicksand (brand), body TBD */
+  --font-brand: 'Quicksand', 'Pretendard', system-ui, sans-serif;
+  --font-sans: 'Pretendard', 'Apple SD Gothic Neo', system-ui, sans-serif;
+}

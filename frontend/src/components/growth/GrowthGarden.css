@@ -1,0 +1,88 @@
+.growth-garden__scene {
+  position: relative;
+  min-height: 360px;
+  background: linear-gradient(
+    180deg,
+    var(--color-garden-sky) 0%,
+    var(--color-primary-soft) 55%,
+    var(--color-garden-ground) 100%
+  );
+  border-radius: var(--radius);
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.growth-garden__tree {
+  position: absolute;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.tree,
+.plant {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 0.5rem;
+  border-radius: 50% 50% 12% 12%;
+  background: var(--color-primary);
+}
+
+.tree--stage-0,
+.plant--stage-0 {
+  width: 28px;
+  height: 28px;
+  background: var(--color-accent);
+}
+
+.tree--stage-1,
+.plant--stage-1 {
+  width: 44px;
+  height: 52px;
+}
+
+.tree--stage-2,
+.plant--stage-2 {
+  width: 56px;
+  height: 64px;
+}
+
+.tree--stage-3,
+.plant--stage-3 {
+  width: 68px;
+  height: 80px;
+}
+
+.tree--stage-4,
+.plant--stage-4 {
+  width: 88px;
+  height: 96px;
+  background: var(--color-primary-dark);
+}
+
+.growth-garden__pot {
+  position: absolute;
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+.growth-garden__pot:nth-child(1) {
+  top: 18%;
+  left: 12%;
+}
+.growth-garden__pot:nth-child(2) {
+  top: 22%;
+  right: 14%;
+}
+.growth-garden__pot:nth-child(3) {
+  top: 8%;
+  left: 42%;
+}
+
+.growth-garden__current-pot {
+  position: absolute;
+  right: 8%;
+  bottom: 18%;
+  text-align: center;
+}

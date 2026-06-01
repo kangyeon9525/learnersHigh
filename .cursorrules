@@ -1,0 +1,74 @@
+You are an AI coding agent in the **Learners High (러너스하이)** monorepo.
+
+## MANDATORY: Read docs before coding
+
+At **every session start**, read in this order (do not skip):
+
+1. `docs/session_context.md` — latest log, next tasks, open issues
+2. `docs/project_context.md` — scope, constraints, non-goals
+3. `docs/architecture.md` — structure, layers, conventions
+4. `docs/acceptance.md` — Definition of Done for your task
+
+**Priority on conflict:** project_context > architecture > acceptance > session_context
+
+At **session end**, append a new entry to `docs/session_context.md` (template in that file) and self-check relevant items in `docs/acceptance.md`.
+
+Full agent guide: `CLAUDE.md` · Doc index: `docs/README.md`
+
+---
+
+## Repository
+
+- Workspaces: `frontend/` (React+Vite), `backend/` (Express+Mongoose), `shared/` (`@learners-high/shared`), `e2e/` (Playwright)
+- Cross-workspace imports: **`shared` only**. Never import frontend↔backend directly.
+
+---
+
+## Product — 집중 우선 (Non-Negotiable)
+
+- **During study:** Only focus/distracted warnings (timer auto-stop). NO achievement/quest/growth reward UI or notifications.
+- **After study end:** Backend batch settlement → `StudySessionResult` → `result-modal` only.
+- Settlement modal: **server-confirmed result only** — no optimistic UI.
+- Retrospective: mypage collection + growth dashboard.
+
+---
+
+## Architecture (enforce)
+
+| Layer | Rule |
+|-------|------|
+| **Backend** | `routes → controllers (zod) → services → db`. Business logic **only** in `backend/src/services/**`. |
+| **Frontend** | Display only. HTTP **only** via `frontend/src/api/**`. Zustand stores server responses. |
+| **Types** | SSOT: `shared/src/types/**`. Match Mongoose schemas. |
+| **DB** | MongoDB. Atomic updates (`$inc`, `findOneAndUpdate`). API responses reflect **actual DB state**. |
+| **Mock AI** | `backend/src/mock-ai/` — seeded focus/distracted injection (no webcam storage). |
+
+---
+
+## Implementation checklist (before marking done)
+
+- [ ] TypeScript errors: 0. No new unresolved `any`.
+- [ ] Matches `architecture.md` layers, naming, file placement.
+- [ ] Scope matches `project_context.md` (no out-of-scope features).
+- [ ] Relevant `acceptance.md` items satisfied.
+- [ ] `data-testid` on new interactive UI (E2E).
+- [ ] Loading/error/empty states defined.
+- [ ] Shared components → Storybook stories (if applicable).
+- [ ] Core flow → Playwright in `e2e/` (if applicable).
+- [ ] `session_context.md` updated.
+
+---
+
+## Conventions (summary — details in `docs/architecture.md`)
+
+- **Naming:** camelCase vars/functions, PascalCase types/components, kebab-case files, `is`/`has` booleans, `handle`/`on` events.
+- **Commits:** Conventional Commits `type(scope): subject` — scopes: `frontend`, `backend`, `shared`, `e2e`, `study`, `growth`, `result-modal`, etc.
+- **UI:** Tablet landscape, Figma + design tokens (no hardcoded colors/spacing).
+- **Security:** No secrets in git. Mask PII. Seed = dummy data only.
+
+---
+
+## Language
+
+- Reply to user in **Korean**.
+- Code identifiers and commit messages per team convention (see architecture.md §5).

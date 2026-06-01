@@ -1,0 +1,32 @@
+---
+description: Playwright E2E·Storybook·acceptance DoD 검증 규칙
+globs: e2e/**/*
+alwaysApply: false
+---
+
+# Testing rules
+
+## Playwright (`e2e/`)
+
+- Seed DB before scenarios (`npm run seed`)
+- Verify against **actual API + MongoDB state**
+- Core flows (from `docs/acceptance.md`):
+  - Study start → end → settlement modal (no mid-study reward UI)
+  - Mock AI distracted → warning → timer stop
+  - Growth garden (tree + monthly pots) → drill-down
+  - Mypage collection
+- Use stable selectors: `data-testid`
+- Viewport: tablet landscape (~1280×800)
+
+## Storybook (frontend shared components)
+
+- Required for shared UI components before "done"
+- Stories: default, loading, error, empty + key variants (growth stages, settlement result types)
+
+## Before merge / complete
+
+- TypeScript: 0 errors
+- Relevant Playwright specs pass
+- Check `docs/acceptance.md` §1 + task-specific §2 sections
+
+See `docs/architecture.md` §7
