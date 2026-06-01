@@ -1,14 +1,22 @@
-import type { AttendanceRecord, CheckInRequest, CheckOutRequest } from '@learners-high/shared';
+import mongoose from 'mongoose';
+import type { AttendanceRecord, CheckInRequest, CheckOutRequest, CheckInResponse } from '@learners-high/shared';
 import { AttendanceModel } from '../db/models/index.js';
 import { toAttendanceDto } from '../db/mappers.js';
+import * as focusMonitorService from './focusMonitorService.js';
 
-export async function checkIn(body: CheckInRequest): Promise<AttendanceRecord> {
+export async function checkIn(body: CheckInRequest): Promise<CheckInResponse> {
   const active = await AttendanceModel.findOne({
     userId: body.userId,
     status: 'checked_in',
   });
   if (active) {
-    throw Object.assign(new Error('Already checked in'), { statusCode: 409 });
+    if (!active.focusMonitoring?.enabled) {
+      await focusMonitorService.startMonitoring(body.userId, active._id.toString());
+    }
+    return {
+      attendance: focusMonitorService.toAttendanceWithMonitoring(active),
+      focusMonitor: await focusMonitorService.getMonitorState(body.userId),
+    };
   }
 
   const checkInAt = body.checkInAt ?? new Date().toISOString();
@@ -17,7 +25,14 @@ export async function checkIn(body: CheckInRequest): Promise<AttendanceRecord> {
     checkInAt,
     status: 'checked_in',
   });
-  return toAttendanceDto(doc);
+  const focusMonitor = await focusMonitorService.startMonitoring(
+    body.userId,
+    doc._id.toString(),
+  );
+  return {
+    attendance: focusMonitorService.toAttendanceWithMonitoring(doc),
+    focusMonitor,
+  };
 }
 
 export async function checkOut(body: CheckOutRequest): Promise<{
@@ -36,7 +51,11 @@ export async function checkOut(body: CheckOutRequest): Promise<{
   active.checkOutAt = checkOutAt;
   active.status = 'checked_out';
   active.purpose = body.purpose;
+  if (active.focusMonitoring) {
+    active.focusMonitoring.enabled = false;
+  }
   await active.save();
+  await focusMonitorService.stopMonitoring(body.userId);
 
   const reportSent = body.purpose === 'home';
   if (reportSent) {
@@ -47,8 +66,9 @@ export async function checkOut(body: CheckOutRequest): Promise<{
 }
 
 export async function getActiveAttendance(userId: string): Promise<AttendanceRecord | null> {
+  if (!mongoose.isValidObjectId(userId)) return null;
   const doc = await AttendanceModel.findOne({ userId, status: 'checked_in' }).sort({
     checkInAt: -1,
   });
-  return doc ? toAttendanceDto(doc) : null;
+  return doc ? focusMonitorService.toAttendanceWithMonitoring(doc) : null;
 }

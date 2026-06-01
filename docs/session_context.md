@@ -53,16 +53,278 @@ markdown
 
 > 현재 스냅샷. 세부 이력은 아래 세션 로그 참조.
 
-- **현재 단계:** **P0 완료** → **P1 착수**
-- **동작 가능한 핵심 흐름:** 타이머·정산 모달·성장/마이·4라우트 E2E, Storybook(UI+정산+성장), 3인 시드
-- **미해결 핵심 이슈:** Figma Cloud URL 미등록(선택) — 로컬 `sanxzj25` import로 P0.1 충족
-- **즉시 다음 할 일:** P1.1 입퇴실·계획 API + Figma 기반 홈/타이머 UI
+- **현재 단계:** P2 일부 진행 — **입실·집중 모니터(웹캠 UI) API 연동** 완료, plans·dailyReport는 fixture
+- **동작 가능한 핵심 흐름:** 체크인 → `POST /attendance/check-in` + 집중 모니터 LIVE UI(정적 프레임, 녹화 없음) → 타이머·mock-ai 이탈 동기화·폴링
+- **미해결 핵심 이슈:** plans·dailyReport fixture · 퇴실 API 프론트 미연동 · 오프라인 시 Unsplash 프레임은 로컬 SVG 폴백
+- **즉시 다음 할 일:** P2.1 퇴실·계획 API 프론트 → P2.2 타이머 세션 전면 연동 → P2.4 정산 (`docs/milestones.md` §4)
 
 ---
 
 ## 3. 세션 로그 (최신이 위)
 
 <!-- 새 세션 항목을 이 줄 아래에 추가하세요. -->
+
+### [2026-06-01] 세션 9 — 성장 단계 일러스트 디자인 (씨앗·새싹·나무·화분/꽃)
+
+- 작업자/도구: Claude Code
+- 관련 우선순위: P1.6 / 성장 정원 UX · 디자인
+
+**한 일 (Done)**
+
+- **원인:** `.tree`/`.plant`가 단색 둥근 블롭(크기·색만 차이)이라 성장 요소가 단조로움. 두 트랙이 같은 stage 클래스를 공유해 의미(나무 vs 화분)가 구분되지 않음.
+- **단계별 SVG 일러스트 신설** (`frontend/public/growth/`):
+  - 누적 나무 `tree-0..4.svg` — 씨앗 → 새싹 → 묘목 → 나무 → 성목(잎·열매 장식)
+  - 월간 화분 `plant-0..4.svg` — 씨앗 → 새싹 → 줄기 → 꽃봉오리 → 개화(화분 포함)
+  - 그라데이션·드롭섀도로 입체감, 정원 토큰(녹색 계열)과 톤 일치.
+- **`growth-stages.css` 재작성:** `.tree`/`.plant` 분리, 단계별 `background-image` + 크기 진행, `background-position: center bottom`, drop-shadow. 마크업 변경 없이 전역(홈·정원·정산모달·Storybook) 일괄 적용.
+- **성장 정원 씬 보강(`GrowthGarden.css`):** 태양광 글로우(::before)·잔디 둔덕(::after), 화분 카드 hover/현재 강조·식물 크기 확대(46→52px).
+- **정산모달(`SessionResultModal.css`):** from/to 나무를 단계 무관 동일·콤팩트 크기로 고정(비교 가독성).
+
+**변경 (Files / API / Schema / Seed)**
+
+- 파일:
+  - `frontend/public/growth/{tree,plant}-0..4.svg` (신규 10종)
+  - `frontend/src/styles/growth-stages.css` (재작성)
+  - `frontend/src/components/growth/GrowthGarden.css`
+  - `frontend/src/components/result-modal/SessionResultModal.css`
+- 컴포넌트 TSX/타입/API/스키마/시드: 변경 없음 (CSS·에셋만)
+
+**테스트**
+
+- TypeScript: frontend `tsc --noEmit` 0
+- 수동 검증: 10개 SVG well-formed XML, Vite에서 `image/svg+xml` 200 서빙 확인
+- Storybook: `GrowthGarden.stories.tsx` 기존 스토리로 시각 확인 가능
+
+**결정 / 합의**
+
+- 단계 일러스트는 SVG 배경 방식 채택 — 마크업 불변·전역 재사용·크리스프 스케일. (design-tokens §4·§5의 "TODO 에셋 교체" 충족)
+
+**미해결 / 주의 (Open Issues)**
+
+- 성장 단계 전환 시 모핑 애니메이션은 미적용(크기 transition만). 추후 단계 전환 강조 효과 검토.
+
+**다음 할 일 (Next)**
+
+- P2.1 퇴실·계획 API 프론트 연동 → P2.2 타이머 세션 전면 연동 → P2.4 정산.
+
+***
+
+### [2026-06-01] 세션 8 — Vite 프록시 ECONNREFUSED·ObjectId 캐스팅 500 에러 해결 (기동 내성)
+
+- 작업자/도구: Claude Code
+- 관련 우선순위: P2 / 개발 환경 안정성
+
+**한 일 (Done)**
+
+- **원인 규명:** `npm run dev` 동시 기동 시 ① 백엔드가 `await connectDatabase()`(Atlas 수 초) **후** `app.listen` → 포트가 늦게 열려 프론트 프록시가 `http proxy error … ECONNREFUSED`. ② DB 연결 실패 시 `process.exit(1)`로 죽어 포트 미개방. ③ 부트스트랩 실패→fixture 폴백으로 `userId="demo-user"`가 새고, 이후 라이브 호출이 ObjectId 캐스팅 **500**.
+- **백엔드 선기동:** `server.ts`에서 `app.listen`을 먼저 호출하고 DB는 `connectWithRetry()`로 백그라운드 연결·재시도(지수 백오프, 최대 30s). DB 실패가 프로세스를 죽이지 않음. SIGINT/SIGTERM graceful shutdown 추가.
+- **DB 연결 강화:** `connection.ts`에 `serverSelectionTimeoutMS=10s`, connected/disconnected/error 이벤트 로깅, `connectWithRetry` 추가.
+- **ObjectId 가드:** 자주 호출되는 읽기 서비스(`getActiveSession`·`getActiveAttendance`·`getMonitorState`)에 `mongoose.isValidObjectId` 가드 → 잘못된 id는 500 대신 빈 200(null/inactive).
+- **에러 핸들러:** Mongoose `CastError`를 조용한 400(`invalid_id`)으로 처리(스택 스팸 제거).
+- **Vite 프록시:** `proxy.error` 핸들러로 백엔드 다운 시 깔끔한 503(`backend_unavailable`) 응답 + 안내 1줄.
+- **mock-ai 내성:** `connectWithRetry` 사용, 초기 주입 실패가 프로세스를 죽이지 않게 `process.exit(1)` 제거·tick 단위 catch.
+- **부트스트랩 재시도:** `fetchDemoUserWithRetry`(5회×800ms)로 기동 레이스 시에도 라이브 연결 확보 후에야 fixture 폴백.
+
+**변경 (Files / API / Schema / Seed)**
+
+- 파일:
+  - `backend/src/server.ts`, `backend/src/db/connection.ts`, `backend/src/mock-ai/simulator.ts`
+  - `backend/src/middlewares/errorHandler.ts`
+  - `backend/src/services/{studyService,attendanceService,focusMonitorService}.ts` (ObjectId 가드)
+  - `frontend/vite.config.ts` (프록시 error 핸들러)
+  - `frontend/src/utils/bootstrap.ts` (데모 유저 조회 재시도)
+- API/타입/스키마/시드: 변경 없음
+
+**테스트**
+
+- TypeScript: backend `tsc --noEmit` 0, frontend `tsc --noEmit` 0
+- 수동 검증: 포트 선개방(health 200 @ DB 연결 전) · 유효 ObjectId 6개 엔드포인트 200 · 잘못된 id는 폴링 3종 200/growth·milestones·goals 400 · 백엔드 다운 시 프록시 503 · 백엔드 기동 시 프록시 200
+
+**결정 / 합의**
+
+- 개발 편의/안정성을 위해 백엔드는 DB 없이도 포트를 열고 동작 시도(요청은 mongoose 버퍼링/타임아웃). 프록시 503·CastError 400은 프론트의 fixture 폴백과 호환.
+
+**미해결 / 주의 (Open Issues)**
+
+- 백엔드가 진짜 다운인 경우 Vite 내장 `http proxy error` 로그 1줄은 여전히 출력(정보성, 다운 상태에서만).
+- `VITE_API_BASE_URL`은 루트 `.env`라 Vite가 미로드 → 프론트는 `/api` 프록시 사용(현 설정 의도와 일치, 그대로 둠).
+
+**다음 할 일 (Next)**
+
+- P2.1 퇴실·계획 API 프론트 연동 → P2.2 타이머 세션 전면 연동 → P2.4 정산.
+
+***
+
+### [2026-06-01] 세션 7 — 이탈 경고를 비차단 인라인으로 전환 (타이머 미정지 / 집중 시간 미적립)
+
+- 작업자/도구: Claude Code
+- 관련 우선순위: P2 / 집중 모니터 UX
+
+**한 일 (Done)**
+
+- **동작 변경:** 집중 이탈 감지 시 블로킹 모달(`FocusWarningModal`)로 타이머를 멈추던 방식 → **인라인 경고 배너**(비차단)로 전환. 타이머는 계속 진행.
+- **집중 시간 분리:** 전체 경과(`seconds`)는 항상 증가, 신규 `focusSeconds`는 **이탈 중 미적립**. 종료 시 `focusMinutes`는 `focusSeconds` 기준으로 산정. 타이머 카드에 "집중 시간" 표시 추가.
+- **시뮬레이션 토글:** `이탈 시뮬레이션` ↔ `집중 복귀 시뮬레이션` 버튼으로 이탈/집중을 토글(mock-ai 이벤트 주입). 멈춤 없이 경고만 on/off.
+- **폴링:** mock-ai 폴링이 이탈/집중 상태를 경고에 반영하되 타이머를 멈추지 않도록 변경(`setRunning(false)` 제거).
+- **문서/테스트:** acceptance Flow1 "타이머 자동 정지" → "비차단 인라인 경고·집중 시간 미적립"으로 수정. `ui-navigation.spec.ts` 이탈 경고 테스트를 토글 방식으로 갱신.
+
+**변경 (Files / API / Schema / Seed)**
+
+- 파일:
+  - `frontend/src/pages/TimerPage.tsx` (focusSeconds·distracted 상태, 인라인 경고, 시뮬레이션 토글, 모달 제거)
+  - `frontend/src/pages/TimerPage.css` (`.timer-focus-alert`, `.timer-card__focus`)
+  - `e2e/tests/ui-navigation.spec.ts` (경고 토글 테스트)
+  - `docs/acceptance.md` (Flow1 기준 수정)
+- API/타입/스키마/시드: 변경 없음
+- 참고: `FocusWarningModal.tsx`/`.css`/`.stories.tsx`는 미사용 상태로 남김(Storybook 스토리 유지). 추후 제거 검토.
+
+**테스트**
+
+- Storybook: 변경 없음 (FocusWarningModal 스토리 유지, 앱 미사용)
+- Playwright: `ui-navigation.spec.ts` 갱신(미실행)
+- TypeScript: 프론트 `tsc --noEmit` 오류 0
+
+**결정 / 합의**
+
+- 기존 DoD의 "타이머 자동 정지"는 사용자 요청에 따라 폐기 — 이탈은 경고로만 알리고 학습 흐름을 끊지 않으며, 집중 시간 미적립으로 불이익을 반영.
+
+**미해결 / 주의 (Open Issues)**
+
+- `FocusWarningModal` 미사용 컴포넌트 잔존 — 정리 여부 결정 필요.
+- 새로고침 시 `focusSeconds`·`seconds`·`running` 미복원(기존 한계 유지).
+
+**다음 할 일 (Next)**
+
+- P2.1 퇴실·계획 API 프론트 연동 → P2.2 타이머 세션 전면 연동 → P2.4 정산.
+
+***
+
+### [2026-06-01] 세션 6 — 집중 모니터 Live 프레임 깨짐(검은 화면) 수정
+
+- 작업자/도구: Claude Code
+- 관련 우선순위: P2 / 집중 모니터 UX
+
+**한 일 (Done)**
+
+- **근본 원인 규명:** `frontend/public/focus-monitor/` SVG 프레임 6개 중 5개가 인코딩 깨짐(`file` 판정 `data`). 깨진 한글 텍스트/`aria-label`로 XML 파싱 실패 → `<img>` 렌더 실패 → 학습 시작 후 Live 화면이 검은색으로만 표시되던 원인. 라이프사이클 로직(standby→live→ended)은 정상이었음.
+- **SVG 재생성:** 6개 전부 깨끗한 UTF-8 + well-formed XML로 교체. 자연스러운 "AI 분석 웹캠 프레임" 일러스트(집중: 책상/노트북, 이탈: 휴대폰/부재). 모두 valid 검증 완료.
+- **패널 견고성 보강:** 이미지 로드 실패 시 검정 대신 안내 폴백(`onError`), 프레임 페이드인(`is-loaded` opacity transition), 프레임 변경 시 로드 상태 초기화.
+- **라이프사이클 확인:** 시작 전=검은 standby, 시작 후=AI 프레임 + LIVE 배지, 종료 후=검은 ended. 라이브 모드 새로고침은 `bootstrapApp` + TimerPage 복원 effect가 `/focus-monitor/state/:userId`로 복원(이미지 깨짐이 함께 해결되어 "사라짐"도 해소).
+
+**변경 (Files / API / Schema / Seed)**
+
+- 파일:
+  - `frontend/public/focus-monitor/{focus,focus-desk,focus-laptop,distracted,distracted-phone,distracted-away}.svg` (재생성)
+  - `frontend/src/components/focus-monitor/WebcamMonitorPanel.tsx` (onError 폴백·페이드인)
+  - `frontend/src/components/focus-monitor/WebcamMonitorPanel.css` (프레임 opacity transition)
+- API: 변경 없음
+- 타입/스키마: 변경 없음
+- 시드: 변경 없음
+
+**테스트**
+
+- Storybook: 변경 없음
+- Playwright: 미실행 (정적 에셋/렌더 수정)
+- TypeScript: 프론트 `tsc --noEmit` 오류 0
+
+**결정 / 합의**
+
+- fixture/오프라인 모드는 진행 중 세션을 서버에서 복원할 수 없어 새로고침 시 standby 복귀 — "결과는 서버 확정값만"(CLAUDE.md §3) 준수를 위한 의도된 동작.
+
+**미해결 / 주의 (Open Issues)**
+
+- 새로고침 시 경과 시간(`seconds`)·`running` 상태는 미복원(Live 프레임만 복원). 별도 UX 과제.
+- 이전 SVG 인코딩 깨짐이 어떤 도구/저장 단계에서 발생했는지 미확인 — 추후 에셋 추가 시 UTF-8(BOM 없음) 확인 필요.
+
+**다음 할 일 (Next)**
+
+- P2.1 퇴실·계획 API 프론트 연동 → P2.2 타이머 세션 전면 연동 → P2.4 정산.
+
+***
+
+### [2026-06-01] 세션 5 — 체크인·집중 모니터(웹캠 UI) API·DB
+
+- 작업자/도구: Cursor Agent
+- 관련 우선순위: P2.1 / 집중 모니터 UX
+
+**한 일 (Done)**
+
+- **집중 모니터링:** 입실 시 모니터링 시작, 정적 프레임(Unsplash + 로컬 SVG 폴백)만 표시, `isRecording: false` 고정
+- **백엔드:** `focusMonitorService`, `focusMonitorCatalog`, `AttendanceRecord.focusMonitoring` 스키마, `GET /focus-monitor/state/:userId`, `GET /focus-monitor/catalog`, check-in 응답 `CheckInResponse`
+- **mock-ai 연동:** `appendAiEvent` 시 출석 모니터 상태·프레임 동기화
+- **프론트:** `api/attendance.ts`, `api/focusMonitor.ts`, `WebcamMonitorPanel`, 홈 체크인 API, 타이머 폴링·이탈 시뮬레이션
+
+**변경 (Files / API / Schema / Seed)**
+
+- 파일: `shared/types` (FocusMonitor*, CheckInResponse), `backend/.../focusMonitor*`, `frontend/.../focus-monitor/*`, `public/focus-monitor/*.svg`
+- API: `POST /attendance/check-in` → `{ attendance, focusMonitor }`, `GET /focus-monitor/state/:userId`
+- 타입/스키마: `AttendanceRecord.focusMonitoring` (frameId·status·startedAt만, 영상 없음)
+
+**테스트**
+
+- TypeScript: 0 (`typecheck` + shared build)
+
+**결정 / 합의**
+
+- 실제 웹캠 녹화·영상 저장 금지 — DB/API는 프레임 메타만 (`project_context` 집중 우선 원칙 유지)
+
+**미해결 / 주의 (Open Issues)**
+
+- plans·dailyReport·퇴실 UI는 아직 fixture/미연동
+- fixture 모드 bootstrap 시 데모 모니터가 항상 켜짐(시연용)
+
+**다음 할 일 (Next)**
+
+- 퇴실·계획 API 프론트 연동, E2E에 체크인→모니터 표시 시나리오 추가
+
+---
+
+### [2026-06-01] 세션 4 — P1 전체 UI 셸 구현
+
+- 작업자/도구: Cursor Agent
+- 관련 우선순위: P1 (전체 UI · UI→A→B 순서)
+
+**한 일 (Done)**
+
+- **P1.2.3/2.4 fixtures + 오프라인 폴백** — `fixtures/demo-data.ts`, `bootstrapApp` API 실패 시 fixture 적재 + `dataSource` 배너 (백엔드 없이 전 화면 시연 가능)
+- **P1.3 홈** — Figma 3컬럼(계획·성장정원·퀘스트/성취) + 체크인 버튼
+- **P1.4 타이머** — 스톱워치/타이머 모드 토글, 대형 디스플레이, 이탈 경고 모달(계속/정지), 진척도·만족도 입력, API 실패 시 fixture 정산
+- **P1.5 정산 모달** — Figma 정합(성취/퀘스트/점수/성장변화/Next Evolution) 4변형, 기존 Storybook 호환
+- **P1.6 성장 정원** — 중심 누적 나무 + 월간 화분 스트립, 프로필 패널, `GrowthCalendarPage` 드릴다운(누적/월간 토글·달력 그리드)
+- **P1.7 마이페이지** — 성취 그리드(선택/잠김) + 상세 패널 + 탭(성취/퀘스트/성장)
+- **P1.8 데일리 리포트** — `DailyReportPage` 신규(타임라인·도넛·통계·코멘트) + 라우트/네비
+- **P1.9 입퇴실** — `AttendanceModal`(퇴실 목적 필수) + `PlanList` UI 셸
+- 성장 단계 시각화 `styles/growth-stages.css`로 전역화, AppShell 아이콘 네비 + Start Study CTA + 데일리 네비
+
+**변경 (Files / API / Schema / Seed)**
+
+- 파일(신규): `fixtures/demo-data.ts`, `pages/DailyReportPage.*`, `pages/GrowthCalendarPage.*`, `components/timer/FocusWarningModal.*`, `components/attendance/AttendanceModal.*`, `components/plans/PlanList.*`, `components/layout/NavIcon.tsx`, `styles/growth-stages.css`, `e2e/tests/ui-navigation.spec.ts`, Storybook 3종
+- 파일(수정): `App.tsx`, `AppShell.*`, `stores/useAppStore.ts`, `utils/bootstrap.ts`, `utils/format.ts`, 전 페이지·`GrowthGarden`·`AchievementGrid`·`SessionResultPanel`/`SessionResultModal`
+- API/스키마/시드: 변경 없음 (UI 셸, fixture 사용)
+
+**테스트**
+
+- TypeScript: 0 (`typecheck` 통과)
+- ESLint: 0 (frontend/src·e2e)
+- 빌드: `vite build` 성공 (139 modules)
+- Storybook 스토리: FocusWarningModal·AttendanceModal·PlanList 추가
+- Playwright: `ui-navigation.spec.ts` 신규 (5 시나리오) — 백엔드+Mongo 기동 후 실행 필요
+
+**결정 / 합의**
+
+- P1은 UI·라우팅·fixture만. 비즈니스 판정·`$inc`·aggregation·실 API 동기화는 P2/P3로 명확히 분리.
+- 오프라인 폴백은 P1 한정 — `dataSource==='fixture'` 배너로 명시, TODO 주석으로 P2/P3 교체 지점 표기.
+
+**미해결 / 주의 (Open Issues)**
+
+- plans·attendance·dailyReport는 fixture (실 API는 P2.1/P3.5)
+- 단계별 일러스트는 CSS 도형 placeholder (P3.2.2에서 에셋 교체)
+
+**다음 할 일 (Next)**
+
+- P2.1 입퇴실·계획 API → P2.2 타이머 세션 연동 → P2.4 정산 백엔드 → P2.6 A파트 E2E
+
+---
 
 ### [2026-06-01] 세션 3 — P0 마일스톤 완료
 

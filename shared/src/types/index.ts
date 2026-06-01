@@ -113,6 +113,30 @@ export interface InjectAiEventRequest {
 export type AttendanceStatus = 'checked_in' | 'checked_out';
 export type CheckOutPurpose = 'continue_study' | 'break' | 'home' | 'other';
 
+/** 집중 모니터링용 정적 프레임 (영상 저장 없음 — URL만 참조) */
+export interface FocusMonitorFrame {
+  id: string;
+  status: AiFocusStatus;
+  imageUrl: string;
+  label: string;
+}
+
+/** 집중 모니터 화면 표시 단계 (실제 녹화 없음) */
+export type FocusMonitorDisplayMode = 'standby' | 'live' | 'ended';
+
+/** 입실 후 웹캠처럼 보이는 모니터링 상태 (isRecording은 항상 false) */
+export interface FocusMonitorState {
+  active: boolean;
+  /** standby: 학습 전 검은 화면 · live: 학습 중 프레임 · ended: 학습 종료 후 검은 화면 */
+  displayMode: FocusMonitorDisplayMode;
+  status: AiFocusStatus;
+  frame: FocusMonitorFrame;
+  monitoringSince?: string;
+  isRecording: false;
+  sessionId?: string;
+  attendanceId?: string;
+}
+
 export interface AttendanceRecord {
   id: string;
   userId: string;
@@ -120,6 +144,17 @@ export interface AttendanceRecord {
   checkOutAt?: string;
   status: AttendanceStatus;
   purpose?: CheckOutPurpose;
+  focusMonitoring?: {
+    enabled: boolean;
+    currentStatus: AiFocusStatus;
+    currentFrameId: string;
+    startedAt: string;
+  };
+}
+
+export interface CheckInResponse {
+  attendance: AttendanceRecord;
+  focusMonitor: FocusMonitorState;
 }
 
 export interface StudyPlan {

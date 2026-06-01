@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" role="img" aria-label="성목">
+  <defs>
+    <radialGradient id="t4-soil" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#b07b53"/>
+      <stop offset="100%" stop-color="#7f5539"/>
+    </radialGradient>
+    <linearGradient id="t4-trunk" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7f5539"/>
+      <stop offset="50%" stop-color="#a86d3f"/>
+      <stop offset="100%" stop-color="#6b4626"/>
+    </linearGradient>
+    <radialGradient id="t4-leaf" cx="42%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#95d5b2"/>
+      <stop offset="55%" stop-color="#40916c"/>
+      <stop offset="100%" stop-color="#1b4332"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="50" cy="112" rx="42" ry="9" fill="url(#t4-soil)"/>
+  <ellipse cx="50" cy="109" rx="35" ry="6" fill="#6b4626" opacity="0.5"/>
+  <path d="M42 110 L45 52 h10 l3 58 Z" fill="url(#t4-trunk)"/>
+  <path d="M50 72 q-20 -2 -28 -16" stroke="#7f5539" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M50 62 q20 -2 28 -14" stroke="#7f5539" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <circle cx="50" cy="34" r="30" fill="url(#t4-leaf)"/>
+  <circle cx="24" cy="46" r="18" fill="url(#t4-leaf)"/>
+  <circle cx="76" cy="44" r="19" fill="url(#t4-leaf)"/>
+  <circle cx="50" cy="56" r="20" fill="url(#t4-leaf)"/>
+  <circle cx="38" cy="26" r="6" fill="#d8f3dc" opacity="0.7"/>
+  <circle cx="60" cy="30" r="3.2" fill="#ffd166"/>
+  <circle cx="34" cy="50" r="3.2" fill="#ff8fab"/>
+  <circle cx="68" cy="56" r="3.2" fill="#ffd166"/>
+  <circle cx="58" cy="20" r="3.2" fill="#ff8fab"/>
+</svg>

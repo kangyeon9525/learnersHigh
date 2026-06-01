@@ -1,0 +1,66 @@
+/**
+ * 성장 단계 시각화 (누적 나무 / 월간 화분).
+ * 전역에서 재사용 (홈 요약, 성장 정원, 정산 모달, Storybook).
+ * 단계-에셋 매핑 SSOT: docs/design-tokens.md §4·§5.
+ * 단계별 일러스트: frontend/public/growth/{tree,plant}-N.svg
+ */
+.tree,
+.plant {
+  width: 72px;
+  height: 84px;
+  margin: 0 auto;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: contain;
+  filter: drop-shadow(0 6px 10px rgba(27, 67, 50, 0.18));
+  transition:
+    width 0.35s ease,
+    height 0.35s ease;
+}
+
+/* ── 누적 나무 (Lifetime): 씨앗 → 새싹 → 묘목 → 나무 → 성목 ── */
+.tree--stage-0 {
+  width: 56px;
+  height: 60px;
+  background-image: url('/growth/tree-0.svg');
+}
+.tree--stage-1 {
+  width: 60px;
+  height: 72px;
+  background-image: url('/growth/tree-1.svg');
+}
+.tree--stage-2 {
+  width: 76px;
+  height: 92px;
+  background-image: url('/growth/tree-2.svg');
+}
+.tree--stage-3 {
+  width: 92px;
+  height: 110px;
+  background-image: url('/growth/tree-3.svg');
+}
+.tree--stage-4 {
+  width: 108px;
+  height: 128px;
+  background-image: url('/growth/tree-4.svg');
+}
+
+/* ── 월간 화분 (Monthly): 씨앗 → 새싹 → 줄기 → 꽃봉오리 → 개화 ── */
+.plant {
+  filter: drop-shadow(0 4px 7px rgba(27, 67, 50, 0.16));
+}
+.plant--stage-0 {
+  background-image: url('/growth/plant-0.svg');
+}
+.plant--stage-1 {
+  background-image: url('/growth/plant-1.svg');
+}
+.plant--stage-2 {
+  background-image: url('/growth/plant-2.svg');
+}
+.plant--stage-3 {
+  background-image: url('/growth/plant-3.svg');
+}
+.plant--stage-4 {
+  background-image: url('/growth/plant-4.svg');
+}

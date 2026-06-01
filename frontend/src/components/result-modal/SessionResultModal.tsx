@@ -15,8 +15,8 @@ export function SessionResultModal() {
       result={result}
       onClose={close}
       growthAction={
-        <Link to="/growth" className="btn-primary" onClick={close} data-testid="go-growth">
-          성장 보러가기
+        <Link to="/growth" className="result-modal__cta" onClick={close} data-testid="go-growth">
+          🌿 성장 정원 보러가기
         </Link>
       }
     />

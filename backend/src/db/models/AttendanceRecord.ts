@@ -7,6 +7,12 @@ const attendanceSchema = new Schema(
     checkOutAt: { type: String },
     status: { type: String, enum: ['checked_in', 'checked_out'], required: true },
     purpose: { type: String, enum: ['continue_study', 'break', 'home', 'other'] },
+    focusMonitoring: {
+      enabled: { type: Boolean, default: false },
+      currentStatus: { type: String, enum: ['focus', 'distracted'] },
+      currentFrameId: { type: String },
+      startedAt: { type: String },
+    },
   },
   { timestamps: true },
 );

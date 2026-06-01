@@ -3,7 +3,9 @@ import { AppShell } from './components/layout/AppShell';
 import { HomePage } from './pages/HomePage';
 import { TimerPage } from './pages/TimerPage';
 import { GrowthDashboardPage } from './pages/GrowthDashboardPage';
+import { GrowthCalendarPage } from './pages/GrowthCalendarPage';
 import { MyPage } from './pages/MyPage';
+import { DailyReportPage } from './pages/DailyReportPage';
 
 export default function App() {
   return (
@@ -12,7 +14,9 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/timer" element={<TimerPage />} />
         <Route path="/growth" element={<GrowthDashboardPage />} />
+        <Route path="/growth/calendar" element={<GrowthCalendarPage />} />
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/report" element={<DailyReportPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppShell>

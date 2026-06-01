@@ -23,9 +23,21 @@ export async function endStudySession(
   return data;
 }
 
+export async function abandonActiveSessions(userId: string) {
+  await apiClient.post('/study/session/abandon', { userId });
+}
+
 export async function fetchActiveSession(userId: string) {
   const { data } = await apiClient.get<{ session: StudySession | null }>(
     `/study/session/active/${userId}`,
   );
   return data.session;
+}
+
+export async function injectAiEvent(sessionId: string, status: 'focus' | 'distracted') {
+  const { data } = await apiClient.post<{
+    session: StudySession;
+    latestEvent: { at: string; status: 'focus' | 'distracted' };
+  }>('/mock-ai/event', { sessionId, status });
+  return data;
 }

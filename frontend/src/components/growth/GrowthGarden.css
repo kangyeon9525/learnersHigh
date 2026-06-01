@@ -1,88 +1,130 @@
+.growth-garden {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
 .growth-garden__scene {
   position: relative;
-  min-height: 360px;
+  min-height: 380px;
   background: linear-gradient(
     180deg,
     var(--color-garden-sky) 0%,
-    var(--color-primary-soft) 55%,
+    var(--color-primary-soft) 58%,
     var(--color-garden-ground) 100%
   );
-  border-radius: var(--radius);
-  padding: 2rem;
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
   overflow: hidden;
 }
 
-.growth-garden__tree {
+/* 부드러운 태양 광 */
+.growth-garden__scene::before {
+  content: '';
   position: absolute;
-  left: 50%;
-  bottom: 2rem;
-  transform: translateX(-50%);
+  top: -40px;
+  left: -30px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(255, 241, 198, 0.85) 0%, rgba(255, 241, 198, 0) 70%);
+  pointer-events: none;
+}
+
+/* 잔디 지면 둔덕 */
+.growth-garden__scene::after {
+  content: '';
+  position: absolute;
+  left: -5%;
+  right: -5%;
+  bottom: 0;
+  height: 84px;
+  background: radial-gradient(120% 100% at 50% 100%, var(--color-garden-ground) 60%, transparent 61%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.growth-garden__level {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  box-shadow: var(--shadow-card);
+  font-size: 0.8rem;
+}
+
+.growth-garden__level small {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.growth-garden__tree {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--space-lg);
   text-align: center;
 }
 
-.tree,
-.plant {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 0.5rem;
-  border-radius: 50% 50% 12% 12%;
-  background: var(--color-primary);
-}
-
-.tree--stage-0,
-.plant--stage-0 {
-  width: 28px;
-  height: 28px;
-  background: var(--color-accent);
-}
-
-.tree--stage-1,
-.plant--stage-1 {
-  width: 44px;
-  height: 52px;
-}
-
-.tree--stage-2,
-.plant--stage-2 {
-  width: 56px;
-  height: 64px;
-}
-
-.tree--stage-3,
-.plant--stage-3 {
-  width: 68px;
-  height: 80px;
-}
-
-.tree--stage-4,
-.plant--stage-4 {
-  width: 88px;
-  height: 96px;
-  background: var(--color-primary-dark);
+.growth-garden__strip {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--space-sm);
 }
 
 .growth-garden__pot {
-  position: absolute;
-  text-align: center;
-  font-size: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  padding: 0.85rem 0.5rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-muted);
+  background: linear-gradient(180deg, var(--color-garden-sky) 0%, var(--color-surface) 70%);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.growth-garden__pot:nth-child(1) {
-  top: 18%;
-  left: 12%;
-}
-.growth-garden__pot:nth-child(2) {
-  top: 22%;
-  right: 14%;
-}
-.growth-garden__pot:nth-child(3) {
-  top: 8%;
-  left: 42%;
+.growth-garden__pot:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
 }
 
-.growth-garden__current-pot {
-  position: absolute;
-  right: 8%;
-  bottom: 18%;
-  text-align: center;
+.growth-garden__pot--current {
+  border-color: var(--color-accent-strong);
+  box-shadow: 0 0 0 2px var(--color-accent);
+  background: linear-gradient(180deg, var(--color-garden-sky) 0%, var(--color-surface) 60%);
+}
+
+.growth-garden__pot .plant {
+  width: 46px !important;
+  height: 56px !important;
+}
+
+.growth-garden__pot--current .plant {
+  width: 52px !important;
+  height: 62px !important;
+}
+
+.growth-garden__pot-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--color-text-secondary);
+}
+
+.growth-garden__pot--current .growth-garden__pot-label {
+  color: var(--color-primary);
 }

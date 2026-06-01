@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-label="노트북으로 집중 학습 중">
+  <defs>
+    <linearGradient id="fl-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1f2b3a"/>
+      <stop offset="100%" stop-color="#0e141b"/>
+    </linearGradient>
+    <radialGradient id="fl-screen" cx="50%" cy="78%" r="40%">
+      <stop offset="0%" stop-color="#8fc4ff" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#8fc4ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="fl-vig" cx="50%" cy="50%" r="72%">
+      <stop offset="62%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.55"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="640" height="480" fill="url(#fl-bg)"/>
+  <rect width="640" height="480" fill="url(#fl-screen)"/>
+
+  <!-- 인물 -->
+  <ellipse cx="320" cy="196" rx="54" ry="66" fill="#cca27c"/>
+  <path d="M266 192 Q320 112 374 192 L360 248 Q320 224 280 248 Z" fill="#2f261d"/>
+  <ellipse cx="300" cy="200" rx="6" ry="4" fill="#2a221a"/>
+  <ellipse cx="340" cy="200" rx="6" ry="4" fill="#2a221a"/>
+  <rect x="230" y="262" width="180" height="80" rx="22" fill="#41506a"/>
+
+  <!-- 노트북 -->
+  <rect x="196" y="332" width="248" height="118" rx="8" fill="#222d3c"/>
+  <rect x="214" y="346" width="212" height="118" rx="6" fill="#16202e"/>
+  <rect x="226" y="356" width="188" height="92" rx="4" fill="#3a7bd5" opacity="0.3"/>
+  <rect x="238" y="370" width="92" height="7" rx="3" fill="#7fb0e4" opacity="0.7"/>
+  <rect x="238" y="386" width="140" height="7" rx="3" fill="#7fb0e4" opacity="0.45"/>
+  <rect x="238" y="402" width="110" height="7" rx="3" fill="#7fb0e4" opacity="0.45"/>
+  <rect x="180" y="450" width="280" height="14" rx="5" fill="#3a4757"/>
+
+  <rect width="640" height="480" fill="url(#fl-vig)"/>
+</svg>

@@ -15,7 +15,7 @@ test.describe('학습 루프 → 종료 정산', () => {
     await page.getByTestId('end-study').click();
 
     await expect(page.getByTestId('session-result-modal')).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByText('학습 종료 정산')).toBeVisible();
+    await expect(page.getByText('오늘 학습 완료!')).toBeVisible();
   });
 
   test('성장 대시보드 조회', async ({ page }) => {

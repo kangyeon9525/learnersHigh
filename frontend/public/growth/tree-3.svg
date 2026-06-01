@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" role="img" aria-label="나무">
+  <defs>
+    <radialGradient id="t3-soil" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#b07b53"/>
+      <stop offset="100%" stop-color="#7f5539"/>
+    </radialGradient>
+    <linearGradient id="t3-trunk" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8a5a33"/>
+      <stop offset="50%" stop-color="#a86d3f"/>
+      <stop offset="100%" stop-color="#7f5539"/>
+    </linearGradient>
+    <radialGradient id="t3-leaf" cx="42%" cy="34%" r="70%">
+      <stop offset="0%" stop-color="#74c69d"/>
+      <stop offset="100%" stop-color="#2d6a4f"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="50" cy="110" rx="38" ry="10" fill="url(#t3-soil)"/>
+  <ellipse cx="50" cy="107" rx="32" ry="6" fill="#6b4626" opacity="0.5"/>
+  <path d="M44 108 L46 60 h8 l2 48 Z" fill="url(#t3-trunk)"/>
+  <path d="M50 74 q-16 -2 -22 -14" stroke="#7f5539" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M50 66 q16 -2 22 -12" stroke="#7f5539" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle cx="50" cy="40" r="26" fill="url(#t3-leaf)"/>
+  <circle cx="28" cy="52" r="15" fill="url(#t3-leaf)"/>
+  <circle cx="72" cy="50" r="16" fill="url(#t3-leaf)"/>
+  <circle cx="50" cy="58" r="16" fill="url(#t3-leaf)"/>
+  <circle cx="44" cy="34" r="5" fill="#b7e4c7" opacity="0.6"/>
+</svg>

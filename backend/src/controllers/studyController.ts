@@ -74,3 +74,17 @@ export async function getActiveSession(req: Request, res: Response, next: NextFu
     next(e);
   }
 }
+
+const abandonSchema = z.object({
+  userId: z.string().min(1),
+});
+
+export async function abandonSession(req: Request, res: Response, next: NextFunction) {
+  try {
+    const body = abandonSchema.parse(req.body);
+    await studyService.abandonIncompleteSessions(body.userId);
+    res.json({ ok: true });
+  } catch (e) {
+    next(e);
+  }
+}

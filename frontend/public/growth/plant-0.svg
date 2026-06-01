@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" role="img" aria-label="씨앗">
+  <defs>
+    <linearGradient id="p0-pot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e98a6a"/>
+      <stop offset="100%" stop-color="#c25e42"/>
+    </linearGradient>
+  </defs>
+  <path d="M30 78 h40 l-5 34 h-30 Z" fill="url(#p0-pot)"/>
+  <rect x="26" y="72" width="48" height="10" rx="4" fill="#f0a085"/>
+  <ellipse cx="50" cy="78" rx="20" ry="5" fill="#6b4626"/>
+  <ellipse cx="50" cy="74" rx="6" ry="8" fill="#a86d3f"/>
+</svg>

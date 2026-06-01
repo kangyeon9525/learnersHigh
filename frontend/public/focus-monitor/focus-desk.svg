@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-label="책상에 앉아 집중 학습 중">
+  <defs>
+    <linearGradient id="fd-bg" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0%" stop-color="#2b3647"/>
+      <stop offset="100%" stop-color="#121821"/>
+    </linearGradient>
+    <radialGradient id="fd-lamp" cx="46%" cy="22%" r="42%">
+      <stop offset="0%" stop-color="#ffe9bf" stop-opacity="0.42"/>
+      <stop offset="60%" stop-color="#ffd98f" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#ffd98f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="fd-vig" cx="50%" cy="50%" r="72%">
+      <stop offset="62%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.55"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="640" height="480" fill="url(#fd-bg)"/>
+  <rect width="640" height="480" fill="url(#fd-lamp)"/>
+
+  <!-- 데스크 -->
+  <rect x="60" y="312" width="520" height="168" fill="#1c2530"/>
+  <rect x="60" y="312" width="520" height="8" fill="#27303d"/>
+
+  <!-- 스탠드 조명 -->
+  <rect x="486" y="150" width="8" height="166" rx="3" fill="#3a4757"/>
+  <path d="M455 150 q35 -40 78 0 z" fill="#f3d79a"/>
+  <circle cx="494" cy="150" r="6" fill="#fff3d6"/>
+
+  <!-- 책 -->
+  <rect x="150" y="356" width="190" height="96" rx="6" fill="#f5f0e6"/>
+  <rect x="244" y="356" width="4" height="96" fill="#d8cfbd"/>
+  <rect x="166" y="376" width="150" height="4" rx="2" fill="#c4b8a8"/>
+  <rect x="166" y="390" width="130" height="4" rx="2" fill="#c4b8a8"/>
+  <rect x="166" y="404" width="142" height="4" rx="2" fill="#c4b8a8"/>
+
+  <!-- 인물 (고개 숙여 집중) -->
+  <ellipse cx="300" cy="226" rx="60" ry="72" fill="#d7ab7c"/>
+  <path d="M240 222 Q300 138 360 222 L344 280 Q300 256 256 280 Z" fill="#3a2e26"/>
+  <ellipse cx="276" cy="232" rx="7" ry="4" fill="#2a221a"/>
+  <ellipse cx="324" cy="232" rx="7" ry="4" fill="#2a221a"/>
+  <path d="M210 300 Q300 250 390 300 L390 312 L210 312 Z" fill="#46546a"/>
+  <rect x="200" y="300" width="240" height="60" rx="20" fill="#46546a"/>
+
+  <rect width="640" height="480" fill="url(#fd-vig)"/>
+</svg>

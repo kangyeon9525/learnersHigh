@@ -2,7 +2,7 @@
  * 시딩된 집중/이탈 시나리오를 주기적으로 API에 주입 (웹캠 대체)
  */
 import { config } from '../config.js';
-import { connectDatabase } from '../db/connection.js';
+import { connectWithRetry } from '../db/connection.js';
 import { StudySessionModel } from '../db/models/index.js';
 
 const SCENARIO: Array<'focus' | 'distracted'> = [
@@ -45,18 +45,21 @@ async function main() {
     return;
   }
 
-  await connectDatabase();
+  // DB·API가 준비되기 전에 떠도 죽지 않고 재시도한다 (npm run dev 동시 기동 레이스 대응).
+  void connectWithRetry();
   const apiBase = `http://127.0.0.1:${config.port}`;
 
   console.log(`[mock-ai] Running every ${config.mockAiIntervalMs}ms → ${apiBase}`);
 
-  await injectOnce(apiBase);
-  setInterval(() => {
-    injectOnce(apiBase).catch(console.error);
-  }, config.mockAiIntervalMs);
+  const tick = () => {
+    injectOnce(apiBase).catch((err) => {
+      console.warn('[mock-ai] tick 건너뜀 —', err instanceof Error ? err.message : err);
+    });
+  };
+
+  setInterval(tick, config.mockAiIntervalMs);
 }
 
 main().catch((err) => {
   console.error('[mock-ai] Failed', err);
-  process.exit(1);
 });
