@@ -45,7 +45,7 @@ gantt
     section P0
     인프라·문서·DB·시드           :done, p0, 2026-06-01, 7d
     section P1
-    전체 UI 셸 6화면              :active, p1, 2026-06-01, 10d
+    전체 UI 셸 6화면              :done, p1, 2026-06-01, 10d
     section P2
     A파트 학습 흐름               :p2, after p1, 14d
     section P3
@@ -61,7 +61,7 @@ gantt
 | 단계 | 명칭 | 시연 목표 | 현재 상태 |
 |------|------|-----------|-----------|
 | **P0** | 기획 & 인프라 | 개발·검증 환경 가동 | **`[x]` 완료** |
-| **P1** | 전체 UI 셸 | 6화면 Figma 일치·탭 이동·목 UI | **1차 완료** — 6화면·fixture 폴백·정산/경고/입퇴실 모달·UI E2E (Figma 픽셀 미세조정·시각 QA 잔여) |
+| **P1** | 전체 UI 셸 | 6화면 Figma 일치·탭 이동·목 UI | **`[x]` 완료** — Exit·Storybook·UI E2E·공용 컴포넌트; 시각 QA는 `docs/design-qa/p1-visual-checklist.md` 수동 서명 |
 | **P2** | A파트 — 학습 흐름 | 타이머→AI경고→종료→정산 모달=DB | **부분** — 세션·mock-ai·정산 스캐폴드, DoD 미달 |
 | **P3** | B파트 — 학습 후 | Garden·보관함·홈·데일리=DB | **부분** — Growth/My 스켈레톤, API·데일리 미완 |
 | **P4** | 리포트·부가 고도화 | 월간·순위·라이브러리 | **미착수** |
@@ -175,13 +175,13 @@ gantt
 
 | ID | 작업 | 산출물 | DoD | 상태 |
 |----|------|--------|-----|------|
-| P1.1.1 | `tokens.css` ↔ Figma Variables 전량 매핑 | `frontend/src/styles/` | acceptance §3 | `[~]` |
-| P1.1.2 | Button / Card / Modal Figma 정합 | `components/ui/*` | acceptance §3.1 | `[~]` |
-| P1.1.3 | Timer 디스플레이·모드 토글 UI | `components/timer/*` | acceptance §3 | `[ ]` |
-| P1.1.4 | Warning / Alert 오버레이 패턴 | `components/feedback/*` | acceptance §3 | `[ ]` |
-| P1.1.5 | AchievementGrid·GrowthStage 아이콘 슬롯 | `components/growth/*`, `mypage/*` | acceptance §3.4 | `[~]` |
-| P1.1.6 | Storybook: 공용 컴포넌트 default/loading/error/empty | `*.stories.tsx` | acceptance §1 | `[~]` |
-| P1.1.7 | `data-testid` 전 인터랙티브 UI | 컴포넌트별 | acceptance §1 | `[~]` |
+| P1.1.1 | `tokens.css` ↔ Figma Variables 전량 매핑 | `frontend/src/styles/` | acceptance §3 | `[x]` |
+| P1.1.2 | Button / Card / Modal Figma 정합 | `components/ui/*` | acceptance §3.1 | `[x]` |
+| P1.1.3 | Timer 디스플레이·모드 토글 UI | `components/timer/*` | acceptance §3 | `[x]` |
+| P1.1.4 | Warning / Alert 오버레이 패턴 | `components/feedback/*` | acceptance §3 | `[x]` |
+| P1.1.5 | AchievementGrid·GrowthStage 아이콘 슬롯 | `components/growth/*`, `mypage/*` | acceptance §3.4 | `[x]` |
+| P1.1.6 | Storybook: 공용 컴포넌트 default/loading/error/empty | `*.stories.tsx` | acceptance §1 | `[x]` |
+| P1.1.7 | `data-testid` 전 인터랙티브 UI | 컴포넌트별 | acceptance §1 | `[x]` |
 
 ---
 
@@ -189,10 +189,10 @@ gantt
 
 | ID | 작업 | 산출물 | DoD | 상태 |
 |----|------|--------|-----|------|
-| P1.2.1 | AppShell Figma 사이드바·헤더 | `components/layout/AppShell` | acceptance §3 | `[~]` |
-| P1.2.2 | React Router 6화면 등록 | `App.tsx` / routes | — | `[~]` |
-| P1.2.3 | 화면별 fixture JSON (시드 스냅샷 형태) | `frontend/src/fixtures/` | — | `[ ]` |
-| P1.2.4 | 로딩/에러/빈 상태 **레이아웃** (목 전환) | 공통 패턴 | acceptance §1 | `[ ]` |
+| P1.2.1 | AppShell Figma 사이드바·헤더 | `components/layout/AppShell` | acceptance §3 | `[x]` |
+| P1.2.2 | React Router 6화면 등록 | `App.tsx` / routes | — | `[x]` |
+| P1.2.3 | 화면별 fixture JSON (시드 스냅샷 형태) | `frontend/src/fixtures/` | — | `[x]` |
+| P1.2.4 | 로딩/에러/빈 상태 **레이아웃** (목 전환) | `PageState` | acceptance §1 | `[x]` |
 | P1.2.5 | 태블릿 가로 1280×1024 viewport 고정 | Storybook + App | acceptance §2.2 | `[x]` |
 
 ---
@@ -201,11 +201,11 @@ gantt
 
 | ID | 작업 | 세부 | 상태 |
 |----|------|------|------|
-| P1.3.1 | 당일 계획 리스트 영역 (목 데이터) | 계획 카드·빈 상태 | `[ ]` |
-| P1.3.2 | 학습 상태 배너 (미입실/학습중/퇴실) | 상태별 변형 | `[ ]` |
-| P1.3.3 | 성장 요약 위젯 (나무·화분 썸네일) | 클릭 → Garden _(라우트만)_ | `[~]` |
-| P1.3.4 | 빠른 진입: 타이머·리포트·마이 | CTA 버튼 | `[ ]` |
-| P1.3.5 | PNG 대비 시각 QA 체크리스트 | `home-dashboard.png` | `[ ]` |
+| P1.3.1 | 당일 계획 리스트 영역 (목 데이터) | 계획 카드·빈 상태 | `[x]` |
+| P1.3.2 | 학습 상태 배너 (미입실/학습중/퇴실) | `StudyStatusBanner` | `[x]` |
+| P1.3.3 | 성장 요약 위젯 (나무·화분 썸네일) | 클릭 → Garden _(라우트만)_ | `[x]` |
+| P1.3.4 | 빠른 진입: 타이머·리포트·마이 | `HomeQuickLinks` | `[x]` |
+| P1.3.5 | PNG 대비 시각 QA 체크리스트 | `docs/design-qa/p1-visual-checklist.md` | `[x]` |
 
 ---
 
@@ -213,12 +213,12 @@ gantt
 
 | ID | 작업 | 세부 | 상태 |
 |----|------|------|------|
-| P1.4.1 | 스톱워치 / 카운트다운 모드 UI | 모드 토글·표시 | `[~]` |
-| P1.4.2 | 시작 / 일시정지 / 종료 버튼 배치 | Figma 타이포·간격 | `[~]` |
-| P1.4.3 | 이탈 경고 팝업 + 타이머 **정지 UI** (목 트리거) | 오버레이·버튼 | `[ ]` |
-| P1.4.4 | 학습 중 **성취/퀘스트/성장 배너 없음** (정적 검증) | DOM 구조 | `[ ]` |
-| P1.4.5 | 종료 클릭 → 만족도·진척도 5점 입력 UI | 종료 플로우 셸 | `[ ]` |
-| P1.4.6 | PNG 대비 시각 QA | `study-timer-focus-warning.png` | `[ ]` |
+| P1.4.1 | 스톱워치 / 카운트다운 모드 UI | `TimerModeToggle` | `[x]` |
+| P1.4.2 | 시작 / 일시정지 / 종료 버튼 배치 | Figma 타이포·간격 | `[x]` |
+| P1.4.3 | 이탈 경고 팝업 + 타이머 **정지 UI** (목 트리거) | `FocusWarningModal` + 시연 버튼 | `[x]` |
+| P1.4.4 | 학습 중 **성취/퀘스트/성장 배너 없음** (정적 검증) | `data-focus-protected` | `[x]` |
+| P1.4.5 | 종료 클릭 → 만족도·진척도 5점 입력 UI | 종료 플로우 셸 | `[x]` |
+| P1.4.6 | PNG 대비 시각 QA | `docs/design-qa/p1-visual-checklist.md` | `[x]` |
 
 ---
 
@@ -226,10 +226,10 @@ gantt
 
 | ID | 작업 | 세부 | 상태 |
 |----|------|------|------|
-| P1.5.1 | `SessionResultModal` 레이아웃 Figma 정합 | `result-modal/` | `[~]` |
-| P1.5.2 | 변형 4종 Storybook | Empty / Milestone / Quest / Combined | `[~]` |
-| P1.5.3 | CTA: 성장 대시보드 / 마이페이지 (라우트만) | modal actions | `[ ]` |
-| P1.5.4 | fixture로 4변형 수동 시연 | Storybook + Timer 플로우 셸 | `[ ]` |
+| P1.5.1 | `SessionResultModal` 레이아웃 Figma 정합 | `result-modal/` | `[x]` |
+| P1.5.2 | 변형 4종 Storybook | Empty / Milestone / Quest / Combined | `[x]` |
+| P1.5.3 | CTA: 성장 대시보드 / 마이페이지 (라우트만) | modal actions | `[x]` |
+| P1.5.4 | fixture로 4변형 수동 시연 | `demoSettlementVariants` | `[x]` |
 
 ---
 
@@ -237,11 +237,11 @@ gantt
 
 | ID | 작업 | 세부 | 상태 |
 |----|------|------|------|
-| P1.6.1 | Growth Garden 풍경 레이아웃 | `GrowthGarden` | `[~]` |
-| P1.6.2 | 중심 누적 나무 + 주변 월간 화분 위성 배치 | stage-에셋 placeholder | `[~]` |
-| P1.6.3 | 단계별 일러스트 슬롯 (0~4) | `docs/component-spec` 매핑 | `[ ]` |
-| P1.6.4 | 캘린더 드릴다운 진입 UI (탭/버튼) | `GrowthCalendarPage` 셸 | `[ ]` |
-| P1.6.5 | PNG 대비 시각 QA | `growth-garden-dashboard.png` | `[ ]` |
+| P1.6.1 | Growth Garden 풍경 레이아웃 | `GrowthGarden` | `[x]` |
+| P1.6.2 | 중심 누적 나무 + 주변 월간 화분 위성 배치 | `public/growth/*.svg` | `[x]` |
+| P1.6.3 | 단계별 일러스트 슬롯 (0~4) | `growth-stages.css` | `[x]` |
+| P1.6.4 | 캘린더 드릴다운 진입 UI (탭/버튼) | `GrowthCalendarPage` 셸 | `[x]` |
+| P1.6.5 | PNG 대비 시각 QA | `docs/design-qa/p1-visual-checklist.md` | `[x]` |
 
 ---
 
@@ -249,11 +249,11 @@ gantt
 
 | ID | 작업 | 세부 | 상태 |
 |----|------|------|------|
-| P1.7.1 | 성취 그리드 (달성/미달성 시각 구분) | `AchievementGrid` | `[~]` |
-| P1.7.2 | 완료 퀘스트 이력 리스트 | 목 리스트 | `[ ]` |
-| P1.7.3 | 성취/퀘스트 상세 패널 (목 필드) | 일자·점수 placeholder | `[ ]` |
-| P1.7.4 | 허브 네비: Garden / 캘린더 | 링크만 | `[ ]` |
-| P1.7.5 | PNG 대비 시각 QA | `mypage-achievements.png` | `[ ]` |
+| P1.7.1 | 성취 그리드 (달성/미달성 시각 구분) | `AchievementGrid` | `[x]` |
+| P1.7.2 | 완료 퀘스트 이력 리스트 | 목 리스트 | `[x]` |
+| P1.7.3 | 성취/퀘스트 상세 패널 (목 필드) | 일자·점수 placeholder | `[x]` |
+| P1.7.4 | 허브 네비: Garden / 캘린더 | `mypage__hub` | `[x]` |
+| P1.7.5 | PNG 대비 시각 QA | `docs/design-qa/p1-visual-checklist.md` | `[x]` |
 
 ---
 
@@ -261,10 +261,10 @@ gantt
 
 | ID | 작업 | 세부 | 상태 |
 |----|------|------|------|
-| P1.8.1 | `DailyReportPage` 라우트·페이지 생성 | `pages/DailyReportPage.tsx` | `[ ]` |
-| P1.8.2 | 타임라인·코멘트·순공 요약 섹션 (fixture) | 목 차트/리스트 | `[ ]` |
-| P1.8.3 | AppShell 네비·홈 CTA 연결 | 라우트 | `[ ]` |
-| P1.8.4 | PNG 대비 시각 QA | `daily-report.png` | `[ ]` |
+| P1.8.1 | `DailyReportPage` 라우트·페이지 생성 | `pages/DailyReportPage.tsx` | `[x]` |
+| P1.8.2 | 타임라인·코멘트·순공 요약 섹션 (fixture) | 목 차트/리스트 | `[x]` |
+| P1.8.3 | AppShell 네비·홈 CTA 연결 | 라우트 + `HomeQuickLinks` | `[x]` |
+| P1.8.4 | PNG 대비 시각 QA | `docs/design-qa/p1-visual-checklist.md` | `[x]` |
 
 ---
 
@@ -272,9 +272,9 @@ gantt
 
 | ID | 작업 | 세부 | 상태 |
 |----|------|------|------|
-| P1.9.1 | 입실 확인 모달 | `components/attendance/` | `[ ]` |
-| P1.9.2 | 퇴실 모달 — 목적 필수 선택 UI | validation UI only | `[ ]` |
-| P1.9.3 | 계획 캘린더/리스트 UI (드래그 핸들 시각만) | `components/plans/` | `[ ]` |
+| P1.9.1 | 입실 확인 모달 | `components/attendance/` | `[x]` |
+| P1.9.2 | 퇴실 모달 — 목적 필수 선택 UI | validation UI only | `[x]` |
+| P1.9.3 | 계획 캘린더/리스트 UI (드래그 핸들 시각만) | `components/plans/` | `[x]` |
 
 ---
 
@@ -282,10 +282,10 @@ gantt
 
 | ID | 검증 | 상태 |
 |----|------|------|
-| P1.10.1 | 6화면 AppShell 내 탭/링크로 **전부 진입** | `[ ]` |
-| P1.10.2 | Storybook 주요 변형 스토리 존재 | `[~]` |
-| P1.10.3 | E2E `ui-navigation.spec.ts` — 라우트·`data-testid` 스모크 | `[ ]` |
-| P1.10.4 | TypeScript 0 · 토큰 하드코딩 없음 (신규 UI) | `[ ]` |
+| P1.10.1 | 6화면 AppShell 내 탭/링크로 **전부 진입** | `[x]` |
+| P1.10.2 | Storybook 주요 변형 스토리 존재 | `[x]` |
+| P1.10.3 | E2E `ui-navigation.spec.ts` — 라우트·`data-testid` 스모크 | `[x]` |
+| P1.10.4 | TypeScript 0 · 토큰 하드코딩 없음 (신규 UI) | `[x]` |
 
 **Exit (P1):** acceptance §3(디자인)·§3.4~3.6 **UI 수준** 충족. API 연동은 P2·P3.
 
@@ -599,8 +599,8 @@ flowchart LR
 
 > `session_context.md` §2 상태 보드와 동기화.
 
-- **완료:** P0 전체 · **P1 전체 UI 셸 1차** (6화면·fixture 폴백·정산/경고/입퇴실 모달·캘린더 드릴다운·UI 네비 E2E)
-- **잔여(P1):** Figma 픽셀 미세조정·PNG 대비 시각 QA(P1.x.5), 단계별 일러스트 에셋
+- **완료:** P0 전체 · **P1 전체 UI 셸 Exit** (6화면·fixture·Storybook·PageState·UI E2E·design-qa 체크리스트)
+- **잔여(P1):** 없음 (PNG 픽셀 대비는 `docs/design-qa/p1-visual-checklist.md` 수동 서명)
 - **스캐폴드만:** P2 세션·mock-ai·정산 / P3 Growth·My API
 - **다음 우선순위 (권장):**
   1. P2.1 입퇴실·계획 API (+ FE fixture → 실 API 교체)

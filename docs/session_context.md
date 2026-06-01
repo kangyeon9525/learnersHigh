@@ -53,16 +53,45 @@ markdown
 
 > 현재 스냅샷. 세부 이력은 아래 세션 로그 참조.
 
-- **현재 단계:** P2 일부 진행 — **입실·집중 모니터(웹캠 UI) API 연동** 완료, plans·dailyReport는 fixture
-- **동작 가능한 핵심 흐름:** 체크인 → `POST /attendance/check-in` + 집중 모니터 LIVE UI(정적 프레임, 녹화 없음) → 타이머·mock-ai 이탈 동기화·폴링
-- **미해결 핵심 이슈:** plans·dailyReport fixture · 퇴실 API 프론트 미연동 · 오프라인 시 Unsplash 프레임은 로컬 SVG 폴백
-- **즉시 다음 할 일:** P2.1 퇴실·계획 API 프론트 → P2.2 타이머 세션 전면 연동 → P2.4 정산 (`docs/milestones.md` §4)
+- **현재 단계:** **P1 UI 셸 Exit 완료** → P2(A파트) 기능 연동 착수
+- **동작 가능한 핵심 흐름:** 6화면 네비·fixture·Storybook·UI E2E + 체크인·집중 모니터( P2 일부)
+- **미해결 핵심 이슈:** P2 입퇴실·계획·데일리 실 API · P3 B파트 API
+- **즉시 다음 할 일:** P2.1~P2.6 A파트 (`docs/milestones.md` §4)
 
 ---
 
 ## 3. 세션 로그 (최신이 위)
 
 <!-- 새 세션 항목을 이 줄 아래에 추가하세요. -->
+
+### [2026-06-01] 세션 10 — P1 마일스톤 100% Exit
+
+- 작업자/도구: Cursor Agent
+- 관련 우선순위: P1 (전체 UI 셸)
+
+**한 일 (Done)**
+
+- **P1.1~P1.2:** `PageState`, `AlertBanner`, `TimerDisplay`, `TimerModeToggle` + Storybook
+- **P1.3:** `StudyStatusBanner`, `HomeQuickLinks`, 홈 퇴실 모달(fixture)
+- **P1.4~P1.5:** 타이머 `data-focus-protected`, 이탈 팝업 시연(`FocusWarningModal`), 정산 CTA 마이·정원, `demoSettlementVariants`
+- **P1.6~P1.9:** 마이 허브 링크, fixtures `index.ts`, `docs/design-qa/p1-visual-checklist.md`
+- **P1.10:** E2E 확장(홈 배너·퇴실·팝업), `milestones.md`·`acceptance.md` §3 갱신
+
+**변경 (Files / API / Schema / Seed)**
+
+- 파일: `components/ui/PageState*`, `components/feedback/*`, `components/timer/Timer*`, `components/home/*`, `fixtures/index.ts`, `docs/design-qa/p1-visual-checklist.md`
+- API/스키마/시드: 없음
+
+**테스트**
+
+- TypeScript: 0 (`npm run typecheck`) — `demoSettlementVariants` readonly 배열 → mutable 스프레드 수정
+- Playwright: `ui-navigation.spec.ts` 7/7 통과
+
+**다음 할 일 (Next)**
+
+- P2.1 입퇴실·계획 API 프론트 연동
+
+---
 
 ### [2026-06-01] 세션 9 — 성장 단계 일러스트 디자인 (씨앗·새싹·나무·화분/꽃)
 

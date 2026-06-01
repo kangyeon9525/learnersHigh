@@ -13,18 +13,21 @@ import {
   demoSettlement,
 } from '../fixtures/demo-data';
 import { fetchGoals, fetchGrowth, fetchMilestones } from '../api/growth';
+import { AlertBanner } from '../components/feedback/AlertBanner';
+import { FocusWarningModal } from '../components/timer/FocusWarningModal';
+import { TimerDisplay } from '../components/timer/TimerDisplay';
+import { TimerModeToggle, type TimerMode } from '../components/timer/TimerModeToggle';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { PageState } from '../components/ui/PageState';
 import { useAppStore } from '../stores/useAppStore';
 import {
   buildLocalMonitorState,
   resolveTimerDisplayMode,
 } from '../utils/focusMonitorFrames';
 import { syncTimerHydration } from '../utils/syncTimerHydration';
-import { formatClock } from '../utils/format';
 import './TimerPage.css';
 
-type TimerMode = 'stopwatch' | 'timer';
 type Score = 1 | 2 | 3 | 4 | 5;
 
 const COUNTDOWN_SECONDS = 25 * 60;
@@ -53,6 +56,7 @@ export function TimerPage() {
   const [ending, setEnding] = useState(false);
   const [monitorEnded, setMonitorEnded] = useState(false);
   const [hydrating, setHydrating] = useState(true);
+  const [focusModalOpen, setFocusModalOpen] = useState(false);
   const intervalRef = useRef<number | null>(null);
   const distractedRef = useRef(false);
 
@@ -275,37 +279,22 @@ export function TimerPage() {
         ? '집중력 이탈 — 집중 시간이 적립되지 않습니다'
         : '집중 학습 중';
 
+  if (hydrating && dataSource === 'live') {
+    return (
+      <div className="timer-page" data-testid="timer-page">
+        <PageState variant="loading" title="학습 상태 동기화 중" testId="timer-hydrating" />
+      </div>
+    );
+  }
+
   return (
-    <div className="timer-page" data-testid="timer-page">
+    <div className="timer-page" data-testid="timer-page" data-focus-protected="true">
       <header className="timer-page__head">
         <div>
           <h2>학습 타이머</h2>
           <p className="muted">학습 중에는 집중/이탈 경고 외 알림을 표시하지 않습니다.</p>
         </div>
-        <div className="timer-mode" role="tablist" aria-label="타이머 모드">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'stopwatch'}
-            className={`timer-mode__btn${mode === 'stopwatch' ? ' timer-mode__btn--active' : ''}`}
-            onClick={() => isIdle && setMode('stopwatch')}
-            disabled={!isIdle}
-            data-testid="mode-stopwatch"
-          >
-            스톱워치
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'timer'}
-            className={`timer-mode__btn${mode === 'timer' ? ' timer-mode__btn--active' : ''}`}
-            onClick={() => isIdle && setMode('timer')}
-            disabled={!isIdle}
-            data-testid="mode-timer"
-          >
-            타이머
-          </button>
-        </div>
+        <TimerModeToggle mode={mode} disabled={!isIdle} onChange={setMode} />
       </header>
 
       <div className="timer-page__main">
@@ -322,31 +311,23 @@ export function TimerPage() {
 
         <Card className="timer-card">
           {showDistractedAlert && (
-            <div
-              className="timer-focus-alert"
-              role="status"
-              aria-live="polite"
-              data-testid="focus-warning"
-            >
-              <span className="timer-focus-alert__icon" aria-hidden>
+            <AlertBanner
+              testId="focus-warning"
+              title="집중력이 감지되지 않았습니다"
+              description="시선이 화면에서 벗어났습니다. 집중 시간은 적립되지 않습니다."
+              icon={
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                   <path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.4 5.1A9.5 9.5 0 0 1 12 4.8c5 0 9 4.2 9 7.2a11 11 0 0 1-2.2 3.1M6.3 6.3A11.6 11.6 0 0 0 3 12c0 3 4 7.2 9 7.2 1 0 2-.2 2.9-.5" />
                 </svg>
-              </span>
-              <div className="timer-focus-alert__text">
-                <strong>집중력이 감지되지 않았습니다</strong>
-                <span>시선이 화면에서 벗어났습니다. 집중 시간은 적립되지 않습니다.</span>
-              </div>
-            </div>
+              }
+            />
           )}
 
-          <div className="timer-display" data-testid="timer-display">
-            {formatClock(seconds)}
-          </div>
-          <p className="timer-card__focus muted" data-testid="focus-time">
-            집중 시간 <strong>{formatClock(focusSeconds)}</strong>
-          </p>
-          <p className="timer-card__subject muted">{subjectLabel}</p>
+          <TimerDisplay
+            seconds={seconds}
+            focusSeconds={focusSeconds}
+            subjectLabel={subjectLabel}
+          />
 
           <div className="timer-actions">
             {isIdle ? (
@@ -394,6 +375,13 @@ export function TimerPage() {
                 >
                   {distracted ? '집중 복귀 시뮬레이션' : '이탈 시뮬레이션'}
                 </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setFocusModalOpen(true)}
+                  data-testid="open-focus-modal"
+                >
+                  이탈 팝업 UI (Figma)
+                </Button>
                 <Button variant="primary" onClick={handleEnd} loading={ending} data-testid="end-study">
                   학습 종료
                 </Button>
@@ -431,6 +419,18 @@ export function TimerPage() {
           </label>
         </Card>
       )}
+
+      <FocusWarningModal
+        open={focusModalOpen}
+        onResume={() => {
+          setFocusModalOpen(false);
+          setDistracted(false);
+        }}
+        onStop={() => {
+          setFocusModalOpen(false);
+          setRunning(false);
+        }}
+      />
     </div>
   );
 }

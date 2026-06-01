@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { bootstrapApp } from '../../utils/bootstrap';
 import { useAppStore } from '../../stores/useAppStore';
+import { PageState } from '../ui/PageState';
 import { SessionResultModal } from '../result-modal/SessionResultModal';
 import { NavIcon, type NavIconName } from './NavIcon';
 import './AppShell.css';
@@ -36,12 +37,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   if (error) {
     return (
       <div className="app-shell app-shell--message" data-testid="app-error">
-        <div>
-          <p>초기화 실패: {error}</p>
-          <p>
-            MongoDB 실행 후 <code>npm run seed</code> 를 실행해 주세요.
-          </p>
-        </div>
+        <PageState
+          variant="error"
+          title="앱을 불러오지 못했습니다"
+          message={`${error} — MongoDB 실행 후 npm run seed 를 확인해 주세요.`}
+          testId="app-error-state"
+        />
       </div>
     );
   }
@@ -49,7 +50,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   if (!ready) {
     return (
       <div className="app-shell app-shell--message" data-testid="app-loading">
-        로딩 중…
+        <PageState variant="loading" testId="app-loading-state" />
       </div>
     );
   }

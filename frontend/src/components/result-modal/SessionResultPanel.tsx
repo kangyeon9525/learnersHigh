@@ -7,10 +7,16 @@ interface SessionResultPanelProps {
   result: StudySessionResult;
   onClose?: () => void;
   growthAction?: ReactNode;
+  mypageAction?: ReactNode;
 }
 
 /** 정산 모달 본문 — 학습 종료 후에만 노출 (집중 보호). Storybook·테스트용 presentational */
-export function SessionResultPanel({ result, onClose, growthAction }: SessionResultPanelProps) {
+export function SessionResultPanel({
+  result,
+  onClose,
+  growthAction,
+  mypageAction,
+}: SessionResultPanelProps) {
   const { lifetime } = result.growthDelta;
   const hasMilestone = result.newMilestones.length > 0;
   const hasQuest = result.completedGoals.length > 0;
@@ -94,6 +100,11 @@ export function SessionResultPanel({ result, onClose, growthAction }: SessionRes
           {growthAction ?? (
             <button type="button" className="result-modal__cta" data-testid="go-growth">
               🌿 성장 정원 보러가기
+            </button>
+          )}
+          {mypageAction ?? (
+            <button type="button" className="result-modal__cta result-modal__cta--secondary" data-testid="go-mypage">
+              🏅 마이페이지 보관함
             </button>
           )}
           <button type="button" className="result-modal__close" onClick={onClose}>

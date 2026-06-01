@@ -1,0 +1,11 @@
+.home-quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.home-quick-links .lh-btn {
+  flex: 1 1 auto;
+  min-width: 8rem;
+}

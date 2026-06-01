@@ -1,0 +1,28 @@
+.timer-mode {
+  display: inline-flex;
+  background: var(--color-panel);
+  border-radius: 999px;
+  padding: 4px;
+}
+
+.timer-mode__btn {
+  border: none;
+  background: transparent;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.timer-mode__btn--active {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: var(--shadow-card);
+}
+
+.timer-mode__btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

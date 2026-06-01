@@ -5,11 +5,14 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { PlanList } from '../components/plans/PlanList';
 import { AttendanceModal } from '../components/attendance/AttendanceModal';
+import { HomeQuickLinks } from '../components/home/HomeQuickLinks';
+import { StudyStatusBanner } from '../components/home/StudyStatusBanner';
 import {
   demoAttendance,
   demoFocusMonitor,
 } from '../fixtures/demo-data';
 import { useAppStore } from '../stores/useAppStore';
+import { resolveStudyPresence } from '../utils/studyPresence';
 import { stageBadgeLabel, stageLabel } from '../utils/format';
 import './HomePage.css';
 
@@ -32,8 +35,14 @@ export function HomePage() {
   const setFocusMonitor = useAppStore((s) => s.setFocusMonitor);
   const dataSource = useAppStore((s) => s.dataSource);
   const navigate = useNavigate();
+  const attendance = useAppStore((s) => s.attendance);
+  const activeSession = useAppStore((s) => s.activeSession);
   const [checkInOpen, setCheckInOpen] = useState(false);
+  const [checkOutOpen, setCheckOutOpen] = useState(false);
   const [checkingIn, setCheckingIn] = useState(false);
+
+  const presence = resolveStudyPresence(attendance, activeSession);
+  const canCheckOut = attendance?.status === 'checked_in' && !activeSession;
 
   const handleCheckIn = async () => {
     if (!userId) return;
@@ -81,10 +90,20 @@ export function HomePage() {
           <h2 className="home-page__greeting">안녕하세요, {name || '학습자'}님 👋</h2>
           <p className="muted">{todayLabel()}</p>
         </div>
-        <Button variant="secondary" onClick={() => setCheckInOpen(true)} data-testid="home-check-in">
-          ☀ 체크인하기
-        </Button>
+        <div className="home-page__header-actions">
+          {canCheckOut ? (
+            <Button variant="ghost" onClick={() => setCheckOutOpen(true)} data-testid="home-check-out">
+              퇴실하기
+            </Button>
+          ) : null}
+          <Button variant="secondary" onClick={() => setCheckInOpen(true)} data-testid="home-check-in">
+            ☀ 체크인하기
+          </Button>
+        </div>
       </header>
+
+      <StudyStatusBanner presence={presence} />
+      <HomeQuickLinks />
 
       <div className="home-page__grid">
         <Card className="home-page__plan" title="오늘의 학습 계획">
@@ -186,6 +205,21 @@ export function HomePage() {
         onClose={() => setCheckInOpen(false)}
         onCheckIn={handleCheckIn}
         confirmLoading={checkingIn}
+      />
+      <AttendanceModal
+        open={checkOutOpen}
+        mode="check-out"
+        onClose={() => setCheckOutOpen(false)}
+        onCheckOut={(purpose) => {
+          setAttendance({
+            ...demoAttendance,
+            userId: userId ?? demoAttendance.userId,
+            status: 'checked_out',
+            checkOutAt: new Date().toISOString(),
+            purpose,
+          });
+          setFocusMonitor(null);
+        }}
       />
     </div>
   );

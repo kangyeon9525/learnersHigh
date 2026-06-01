@@ -3,7 +3,14 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-sm);
+}
+
+.home-page__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: flex-end;
 }
 
 .home-page__greeting {

@@ -19,6 +19,11 @@ export function SessionResultModal() {
           🌿 성장 정원 보러가기
         </Link>
       }
+      mypageAction={
+        <Link to="/mypage" className="result-modal__cta result-modal__cta--secondary" onClick={close} data-testid="go-mypage">
+          🏅 마이페이지 보관함
+        </Link>
+      }
     />
   );
 }

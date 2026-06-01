@@ -15,7 +15,7 @@ export function FocusWarningModal({ open, onResume, onStop }: Props) {
   if (!open) return null;
 
   return (
-    <div className="focus-warning" role="alertdialog" aria-modal="true" data-testid="focus-warning">
+    <div className="focus-warning" role="alertdialog" aria-modal="true" data-testid="focus-warning-modal">
       <div className="focus-warning__panel">
         <div className="focus-warning__icon" aria-hidden>
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">

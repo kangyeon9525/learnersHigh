@@ -1,0 +1,47 @@
+.study-status {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.study-status p {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+}
+
+.study-status__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 0.35rem;
+  flex-shrink: 0;
+}
+
+.study-status--not_checked_in .study-status__dot {
+  background: var(--color-text-secondary);
+}
+
+.study-status--checked_in .study-status__dot {
+  background: var(--color-primary);
+}
+
+.study-status--studying .study-status__dot {
+  background: var(--color-success, #2e7d32);
+  animation: study-status-pulse 1.2s ease-in-out infinite;
+}
+
+.study-status--checked_out .study-status__dot {
+  background: var(--color-text-secondary);
+  opacity: 0.6;
+}
+
+@keyframes study-status-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}

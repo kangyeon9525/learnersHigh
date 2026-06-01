@@ -223,16 +223,48 @@ export const demoFocusMonitorDistracted: FocusMonitorState = {
 };
 
 /** 학습 종료 정산 모달 fixture (Storybook·UI 시연용) */
-export const demoSettlement: StudySessionResult = {
+const settlementBase: StudySessionResult = {
   sessionId: 'session-demo',
-  focusMinutes: 195,
-  earnedScore: 150,
-  newMilestones: [demoMilestones[0]],
-  completedGoals: [demoGoals[2]],
+  focusMinutes: 45,
+  earnedScore: 80,
+  newMilestones: [],
+  completedGoals: [],
   growthDelta: {
-    lifetime: { fromStage: 2, toStage: 3 },
-    monthly: { fromStage: 2, toStage: 3 },
+    lifetime: { fromStage: 1, toStage: 1 },
+    monthly: { fromStage: 0, toStage: 1 },
   },
+};
+
+/** P1.5.4 — 정산 모달 4변형 fixture */
+export const demoSettlementVariants = {
+  empty: { ...settlementBase, earnedScore: 40 },
+  milestonesOnly: {
+    ...settlementBase,
+    earnedScore: 150,
+    newMilestones: [demoMilestones[0]],
+  },
+  questsOnly: {
+    ...settlementBase,
+    earnedScore: 120,
+    completedGoals: [demoGoals[2]],
+  },
+  combined: {
+    sessionId: 'session-demo',
+    focusMinutes: 195,
+    earnedScore: 370,
+    newMilestones: [demoMilestones[0]],
+    completedGoals: [demoGoals[2]],
+    growthDelta: {
+      lifetime: { fromStage: 2, toStage: 3 },
+      monthly: { fromStage: 2, toStage: 3 },
+    },
+  },
+};
+
+export const demoSettlement: StudySessionResult = {
+  ...demoSettlementVariants.combined,
+  newMilestones: [...demoSettlementVariants.combined.newMilestones],
+  completedGoals: [...demoSettlementVariants.combined.completedGoals],
 };
 
 /** 데일리 리포트 화면 전용 view-model (백엔드 aggregation 전까지 UI 셸용) */

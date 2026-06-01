@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
+import { PageState } from '../components/ui/PageState';
 import { GrowthGarden } from '../components/growth/GrowthGarden';
 import { useAppStore } from '../stores/useAppStore';
 import { stageLabel } from '../utils/format';
@@ -13,9 +14,11 @@ export function GrowthDashboardPage() {
 
   if (!growth) {
     return (
-      <p className="muted" data-testid="growth-loading">
-        성장 데이터를 불러오는 중…
-      </p>
+      <PageState
+        variant="loading"
+        title="성장 데이터를 불러오는 중"
+        testId="growth-loading"
+      />
     );
   }
 

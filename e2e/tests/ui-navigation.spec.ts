@@ -85,4 +85,32 @@ test.describe('P1 UI 셸 네비게이션', () => {
     await page.getByTestId('home-start-study').click();
     await expect(page.getByTestId('timer-page')).toBeVisible();
   });
+
+  test('홈 학습 상태 배너·퇴실 모달·퀵링크', async ({ page }) => {
+    await expect(page.getByTestId('study-status-banner')).toBeVisible();
+    await expect(page.getByTestId('home-quick-links')).toBeVisible();
+    await page.getByTestId('quick-report').click();
+    await expect(page.getByTestId('daily-report')).toBeVisible();
+    await page.getByTestId('nav-home').click();
+    await page.getByTestId('home-check-in').click();
+    await page.getByTestId('attendance-confirm').click();
+    await expect(page.getByTestId('timer-page')).toBeVisible();
+    await page.getByTestId('nav-home').click();
+    await page.getByTestId('home-check-out').click();
+    await page.getByTestId('purpose-home').click();
+    await page.getByTestId('attendance-confirm').click();
+    await expect(page.getByTestId('study-status-banner')).toHaveAttribute(
+      'data-presence',
+      'checked_out',
+    );
+  });
+
+  test('타이머 이탈 팝업 UI (Figma 오버레이)', async ({ page }) => {
+    await page.getByTestId('nav-timer').click();
+    await page.getByTestId('start-study').click();
+    await page.getByTestId('open-focus-modal').click();
+    await expect(page.getByTestId('focus-warning-modal')).toBeVisible();
+    await page.getByTestId('focus-resume').click();
+    await expect(page.getByTestId('focus-warning-modal')).toHaveCount(0);
+  });
 });

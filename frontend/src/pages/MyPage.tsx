@@ -36,9 +36,14 @@ export function MyPage() {
             </p>
           ) : null}
         </div>
-        <Link to="/growth" className="mypage__link" data-testid="go-growth-dashboard">
-          성장 통합 대시보드 →
-        </Link>
+        <div className="mypage__hub">
+          <Link to="/growth" className="mypage__link" data-testid="go-growth-dashboard">
+            성장 통합 대시보드 →
+          </Link>
+          <Link to="/growth/calendar" className="mypage__link" data-testid="mypage-hub-calendar">
+            성장 캘린더 →
+          </Link>
+        </div>
       </header>
 
       <div className="mypage__tabs" role="tablist" aria-label="보관함 탭">
