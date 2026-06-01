@@ -4,6 +4,7 @@ import {
   GoalModel,
   GrowthStateModel,
   MilestoneModel,
+  StudyPlanModel,
   StudySessionModel,
   UserModel,
 } from '../db/models/index.js';
@@ -14,6 +15,14 @@ import {
   SEED_USERS,
 } from './scenarios.js';
 
+function todayPlannedDate(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 async function seed() {
   await mongoose.connect(config.mongodbUri);
   console.log('[seed] Connected to MongoDB');
@@ -21,6 +30,7 @@ async function seed() {
   await Promise.all([
     UserModel.deleteMany({}),
     StudySessionModel.deleteMany({}),
+    StudyPlanModel.deleteMany({}),
     MilestoneModel.deleteMany({}),
     GoalModel.deleteMany({}),
     GrowthStateModel.deleteMany({}),
@@ -112,6 +122,34 @@ async function seedPrimary(userId: mongoose.Types.ObjectId) {
     completed: true,
     aiEvents: DEMO_AI_FOCUS,
   });
+
+  const plannedDate = todayPlannedDate();
+  await StudyPlanModel.insertMany([
+    {
+      userId,
+      title: '수학 · 4장 미적분',
+      plannedDate,
+      sortOrder: 0,
+      durationMinutes: 90,
+      completed: false,
+    },
+    {
+      userId,
+      title: '영어 · 에세이 쓰기 연습',
+      plannedDate,
+      sortOrder: 1,
+      durationMinutes: 45,
+      completed: false,
+    },
+    {
+      userId,
+      title: '과학 · 세포 생물학 복습',
+      plannedDate,
+      sortOrder: 2,
+      durationMinutes: 60,
+      completed: false,
+    },
+  ]);
 }
 
 async function seedDistracted(userId: mongoose.Types.ObjectId) {

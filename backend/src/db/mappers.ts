@@ -31,6 +31,8 @@ export function toStudySessionDto(doc: StudySessionDocument): StudySession {
     endedAt: doc.endedAt ?? doc.startedAt,
     focusMinutes: doc.focusMinutes ?? 0,
     satisfaction: (doc.satisfaction ?? 3) as StudySession['satisfaction'],
+    progress: doc.progress as StudySession['progress'] | undefined,
+    focusAlertTriggered: doc.focusAlertTriggered ?? false,
     completed: doc.completed ?? false,
     aiEvents: (doc.aiEvents ?? []).map((e) => ({
       at: e.at,

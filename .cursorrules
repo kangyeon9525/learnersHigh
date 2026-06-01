@@ -26,7 +26,7 @@ Full agent guide: `CLAUDE.md` · Doc index: `docs/README.md`
 
 ## Product — 집중 우선 (Non-Negotiable)
 
-- **During study:** Only focus/distracted warnings (timer auto-stop). NO achievement/quest/growth reward UI or notifications.
+- **During study:** Only focus/distracted **inline warnings** (non-blocking; focus time not accrued while distracted). NO achievement/quest/growth reward UI or notifications.
 - **After study end:** Backend batch settlement → `StudySessionResult` → `result-modal` only.
 - Settlement modal: **server-confirmed result only** — no optimistic UI.
 - Retrospective: mypage collection + growth dashboard.

@@ -105,12 +105,4 @@ test.describe('P1 UI 셸 네비게이션', () => {
     );
   });
 
-  test('타이머 이탈 팝업 UI (Figma 오버레이)', async ({ page }) => {
-    await page.getByTestId('nav-timer').click();
-    await page.getByTestId('start-study').click();
-    await page.getByTestId('open-focus-modal').click();
-    await expect(page.getByTestId('focus-warning-modal')).toBeVisible();
-    await page.getByTestId('focus-resume').click();
-    await expect(page.getByTestId('focus-warning-modal')).toHaveCount(0);
-  });
 });

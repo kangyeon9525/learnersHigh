@@ -24,7 +24,11 @@ export function SessionResultPanel({
   const evolutionPct = 85; // TODO(P2.4): 서버 산정 다음 단계 진척률로 대체
 
   return (
-    <div className="result-modal-backdrop" data-testid="session-result-modal">
+    <div
+      className="result-modal-backdrop"
+      data-testid="session-result-modal"
+      data-variant={isEmpty ? 'empty' : hasMilestone && hasQuest ? 'combined' : hasMilestone ? 'milestones' : hasQuest ? 'quests' : 'empty'}
+    >
       <div className="result-modal" role="dialog" aria-modal="true" aria-labelledby="result-title">
         <h2 id="result-title" className="result-modal__title">
           오늘 학습 완료! 🎉

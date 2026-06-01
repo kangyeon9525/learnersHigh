@@ -14,7 +14,6 @@ import {
 } from '../fixtures/demo-data';
 import { fetchGoals, fetchGrowth, fetchMilestones } from '../api/growth';
 import { AlertBanner } from '../components/feedback/AlertBanner';
-import { FocusWarningModal } from '../components/timer/FocusWarningModal';
 import { TimerDisplay } from '../components/timer/TimerDisplay';
 import { TimerModeToggle, type TimerMode } from '../components/timer/TimerModeToggle';
 import { Card } from '../components/ui/Card';
@@ -56,7 +55,6 @@ export function TimerPage() {
   const [ending, setEnding] = useState(false);
   const [monitorEnded, setMonitorEnded] = useState(false);
   const [hydrating, setHydrating] = useState(true);
-  const [focusModalOpen, setFocusModalOpen] = useState(false);
   const intervalRef = useRef<number | null>(null);
   const distractedRef = useRef(false);
 
@@ -119,6 +117,11 @@ export function TimerPage() {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [running, mode]);
+
+  /** 서버 플래그: 연속 이탈 N회 시 인라인 경고 유지 */
+  useEffect(() => {
+    if (activeSession?.focusAlertTriggered) setDistracted(true);
+  }, [activeSession?.focusAlertTriggered]);
 
   /** mock-ai 폴링: 이탈/집중 상태를 경고에 반영 (타이머는 멈추지 않음) */
   useEffect(() => {
@@ -184,7 +187,9 @@ export function TimerPage() {
     const next = distracted ? 'focus' : 'distracted';
     if (activeSession && dataSource === 'live' && !activeSession.id.startsWith('local-')) {
       try {
-        await injectAiEvent(activeSession.id, next);
+        const { session } = await injectAiEvent(activeSession.id, next);
+        setActiveSession(session);
+        if (session.focusAlertTriggered) setDistracted(true);
         if (userId) {
           const state = await fetchFocusMonitorState(userId);
           setFocusMonitor(state);
@@ -234,6 +239,7 @@ export function TimerPage() {
         endedAt: new Date().toISOString(),
         focusMinutes,
         satisfaction,
+        progress,
         aiEvents: activeSession.aiEvents,
       });
       const [growth, milestones, goals] = await Promise.all([
@@ -246,7 +252,9 @@ export function TimerPage() {
       setGoals(goals);
       openSettlement(result);
     } catch {
-      openSettlement({ ...demoSettlement, focusMinutes });
+      if (dataSource === 'fixture') {
+        openSettlement({ ...demoSettlement, focusMinutes });
+      }
     }
     setActiveSession(null);
     setMonitorEnded(true);
@@ -375,13 +383,6 @@ export function TimerPage() {
                 >
                   {distracted ? '집중 복귀 시뮬레이션' : '이탈 시뮬레이션'}
                 </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => setFocusModalOpen(true)}
-                  data-testid="open-focus-modal"
-                >
-                  이탈 팝업 UI (Figma)
-                </Button>
                 <Button variant="primary" onClick={handleEnd} loading={ending} data-testid="end-study">
                   학습 종료
                 </Button>
@@ -419,18 +420,6 @@ export function TimerPage() {
           </label>
         </Card>
       )}
-
-      <FocusWarningModal
-        open={focusModalOpen}
-        onResume={() => {
-          setFocusModalOpen(false);
-          setDistracted(false);
-        }}
-        onStop={() => {
-          setFocusModalOpen(false);
-          setRunning(false);
-        }}
-      />
     </div>
   );
 }

@@ -19,6 +19,10 @@ export interface StudySession {
   endedAt: string;
   focusMinutes: number;
   satisfaction: SatisfactionScore;
+  /** 학습 종료 시 입력한 진척도 (1–5) */
+  progress?: SatisfactionScore;
+  /** mock-ai 연속 이탈 N회 이상 시 true (P2.3.2) */
+  focusAlertTriggered?: boolean;
   completed: boolean;
   aiEvents: AiEvent[];
 }
@@ -96,6 +100,7 @@ export interface EndStudySessionRequest {
   endedAt: string;
   focusMinutes: number;
   satisfaction: SatisfactionScore;
+  progress: SatisfactionScore;
   aiEvents?: AiEvent[];
 }
 

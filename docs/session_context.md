@@ -53,16 +53,84 @@ markdown
 
 > 현재 스냅샷. 세부 이력은 아래 세션 로그 참조.
 
-- **현재 단계:** **P1 UI 셸 Exit 완료** → P2(A파트) 기능 연동 착수
-- **동작 가능한 핵심 흐름:** 6화면 네비·fixture·Storybook·UI E2E + 체크인·집중 모니터( P2 일부)
-- **미해결 핵심 이슈:** P2 입퇴실·계획·데일리 실 API · P3 B파트 API
-- **즉시 다음 할 일:** P2.1~P2.6 A파트 (`docs/milestones.md` §4)
+- **현재 단계:** **P2 A파트 2차 진행** (정산·이탈·E2E)
+- **동작 가능한 핵심 흐름:** 입실→타이머→연속 이탈 플래그→종료(진척도·만족도)→정산 모달·E2E
+- **미해결 핵심 이슈:** P2.1.5 DnD·P2.4.6 growth 트랜잭션·P2.6.4 · P3 B파트
+- **즉시 다음 할 일:** P2.6.4 정산 일관성 E2E · P3 성장 API
 
 ---
 
 ## 3. 세션 로그 (최신이 위)
 
 <!-- 새 세션 항목을 이 줄 아래에 추가하세요. -->
+
+### [2026-06-01] 세션 13 — P2 A파트 2차 (정산·이탈·E2E)
+
+- 작업자/도구: Cursor Agent
+- 관련 우선순위: P2.2 · P2.3 · P2.4 · P2.6
+
+**한 일 (Done)**
+
+- **P2.3.2:** 연속 distracted 3회 → `focusAlertTriggered`, FE 인라인 경고 연동
+- **P2.2.3/2.2.5:** `progress` 저장, `clampFocusMinutes` 서버 정합
+- **P2.4:** `milestoneRules`·`goalService` 분리, 정산 mongoose 트랜잭션(세션·성취·목표)
+- **P2.5.3/4:** 정산 모달 `data-variant` (empty/milestones/quests/combined)
+- **P2.6:** `study-flow-a.spec.ts`, `focus-protection.spec.ts`
+
+**변경**
+
+- 백엔드: `config/focusAlert.ts`, `services/focusAlert.ts`, `milestoneRules.ts`, `goalService.ts`, `sessionDuration.ts`
+- shared: `StudySession.progress`, `focusAlertTriggered`, `EndStudySessionRequest.progress`
+- E2E: 신규 2 스펙
+
+**다음 할 일 (Next)**
+
+- P2.4.6 growth `$inc` 트랜잭션 포함 · P2.6.4 정산 재요청 E2E
+
+---
+
+### [2026-06-01] 세션 12 — 이탈 Figma 팝업 제거 · 문서 정합(인라인 경고)
+
+- 작업자/도구: Cursor Agent
+- 관련 우선순위: P1.4 / P2.3 / 문서 SSOT
+
+**한 일 (Done)**
+
+- `FocusWarningModal` 컴포넌트·Storybook·Figma 시연 버튼 삭제
+- `TimerPage`는 `AlertBanner`(`data-testid="focus-warning"`) 인라인 경고만 유지
+- PRD·acceptance·project_context·milestones·architecture·component-spec·design-qa·cursor rules — **비차단 인라인 경고 + 집중 시간 미적립**으로 통일 (타이머 자동 정지·블로킹 팝업 문구 제거)
+- E2E `ui-navigation` Figma 팝업 시나리오 삭제 (기존 이탈 토글 테스트 유지)
+
+**다음 할 일 (Next)**
+
+- Figma `64:224` PNG 대비 시 인라인 배너 레이아웃만 수동 QA
+
+---
+
+### [2026-06-01] 세션 11 — P2 A파트 1차 (API FE 연동)
+
+- 작업자/도구: Cursor Agent
+- 관련 우선순위: P2.1 · P2.2 · P2.5
+
+**한 일 (Done)**
+
+- `frontend/src/api/plans.ts` — 계획 조회·수정 API
+- `bootstrap.ts` — 당일 계획·입퇴실·세션 live 로드 (실패 시 fixture)
+- `HomePage` — 퇴실 `checkOut` API, 계획 완료 토글 `PATCH`
+- `TimerPage` — live 모드에서 정산 fixture 폴백 제거 (서버 확정만)
+- `backend/seeds/seed.ts` — primary 사용자 당일 `studyPlans` 3건
+
+**테스트**
+
+- TypeScript: `npm run typecheck` 권장
+- Playwright: 기존 `study-flow.spec.ts`·`ui-navigation` 유지
+
+**다음 할 일 (Next)**
+
+- P2.3.2 이탈 연속 N회 세션 플래그
+- `npm run seed` 후 계획 목록 live 확인
+
+---
 
 ### [2026-06-01] 세션 10 — P1 마일스톤 100% Exit
 
@@ -73,7 +141,7 @@ markdown
 
 - **P1.1~P1.2:** `PageState`, `AlertBanner`, `TimerDisplay`, `TimerModeToggle` + Storybook
 - **P1.3:** `StudyStatusBanner`, `HomeQuickLinks`, 홈 퇴실 모달(fixture)
-- **P1.4~P1.5:** 타이머 `data-focus-protected`, 이탈 팝업 시연(`FocusWarningModal`), 정산 CTA 마이·정원, `demoSettlementVariants`
+- **P1.4~P1.5:** 타이머 `data-focus-protected`, 이탈 인라인 `AlertBanner`, 정산 CTA 마이·정원, `demoSettlementVariants`
 - **P1.6~P1.9:** 마이 허브 링크, fixtures `index.ts`, `docs/design-qa/p1-visual-checklist.md`
 - **P1.10:** E2E 확장(홈 배너·퇴실·팝업), `milestones.md`·`acceptance.md` §3 갱신
 

@@ -1,5 +1,7 @@
+import { fetchPlans } from '../api/plans';
 import { fetchGoals, fetchGrowth, fetchMilestones } from '../api/growth';
 import { fetchDemoUser } from '../api/study';
+import { todayPlannedDate } from './date';
 import { syncTimerHydration } from './syncTimerHydration';
 import {
   demoAttendance,
@@ -17,7 +19,7 @@ import { useAppStore } from '../stores/useAppStore';
  *
  * P1(UI 셸): 백엔드/MongoDB가 없을 수 있으므로 API 실패 시 fixture로 폴백하여
  * 모든 화면을 시연 가능하게 한다. fixture 모드는 store.dataSource='fixture'로 표시한다.
- * TODO(P2/P3): plans·attendance는 실제 API(`/api/plans`, `/api/attendance`)로 로드.
+ * P2: plans·attendance·세션은 live API. 실패 시 fixture 폴백.
  */
 /** 백엔드 기동 레이스(npm run dev 동시 실행) 대비 — 짧은 재시도 후에야 fixture로 폴백 */
 async function fetchDemoUserWithRetry(attempts = 5, delayMs = 800) {
@@ -52,7 +54,16 @@ export async function bootstrapApp(): Promise<void> {
     store.setGrowth(growth);
     store.setMilestones(milestones);
     store.setGoals(goals);
-    store.setPlans(demoPlans);
+
+    let plans = demoPlans;
+    try {
+      const today = todayPlannedDate();
+      const fromApi = await fetchPlans(user.id, today);
+      plans = fromApi.length > 0 ? fromApi : await fetchPlans(user.id);
+    } catch {
+      /* 당일 계획 API 실패 시 fixture 유지 */
+    }
+    store.setPlans(plans);
 
     const { attendance, session, focusMonitor } = await syncTimerHydration(user.id);
     store.setAttendance(attendance);

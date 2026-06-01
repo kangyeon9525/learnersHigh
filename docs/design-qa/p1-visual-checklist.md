@@ -14,7 +14,7 @@
 | 화면 | PNG | 페이지/컴포넌트 | 체크 |
 |------|-----|-----------------|------|
 | 홈 | `home-dashboard.png` | `HomePage` | [ ] 3컬럼·상태 배너·퀵링크·계획 빈 상태 |
-| 타이머 | `study-timer-focus-warning.png` | `TimerPage` + `FocusWarningModal` | [ ] 모드 토글·이탈 인라인·팝업 시연 버튼 |
+| 타이머 | `study-timer-focus-warning.png` | `TimerPage` + `AlertBanner` | [ ] 모드 토글·이탈 인라인 경고·집중 시간 표시 |
 | 정산 | `session-result-modal.png` | `SessionResultPanel` Storybook 4종 | [ ] Empty/Milestone/Quest/Combined |
 | 성장 | `growth-garden-dashboard.png` | `GrowthDashboardPage` | [ ] 나무·화분 SVG·캘린더 링크 |
 | 마이 | `mypage-achievements.png` | `MyPage` | [ ] 그리드·탭·상세·허브 링크 |

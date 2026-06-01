@@ -14,6 +14,12 @@
 
 시드 실행 후 콘솔에 출력되는 `userId`를 E2E/API 테스트에 사용.
 
+### mock-ai · 이탈 경고 (P2.3)
+
+- `POST /api/mock-ai/event` — 활성 `studySessions`에 `aiEvents` 주입
+- 연속 **distracted 3회**(`backend/src/config/focusAlert.ts`) → `focusAlertTriggered: true`
+- FE: 인라인 `AlertBanner` + 이탈 중 `focusSeconds` 미적립 (타이머는 계속)
+
 ---
 
 ## 컬렉션별 요약

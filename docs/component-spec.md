@@ -72,4 +72,4 @@
 
 - 스톱워치 / 카운트다운 모드
 - `data-testid`: `timer-display`, `start-study`, `end-study`
-- 이탈 시 경고 + 자동 정지 (mock-ai 연동)
+- 이탈 시 `AlertBanner` 인라인 경고 (비차단). 이탈 중 집중 시간 미적립, 전체 경과 시간은 계속 (mock-ai 연동)

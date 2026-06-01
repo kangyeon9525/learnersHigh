@@ -74,7 +74,7 @@ gantt
 | # | 범위 | P1(UI만) | P2(기능) |
 |---|------|----------|----------|
 | A1 | 타이머 화면 (시작/정지·스톱워치 모드) | `TimerPage` Figma 정합 | API·store·계측 |
-| A2 | AI 이탈 감지 → 경고 팝업 + 타이머 자동 정지 | 경고 UI·오버레이 정합 | mock-ai 주입·규칙 |
+| A2 | AI 이탈 감지 → 인라인 경고 + 집중 시간 미적립 | `AlertBanner`·Figma 타이머 화면 | mock-ai 주입·규칙 |
 | A3 | 학습 종료 → 종료 정산 모달 (4변형) | `SessionResultModal` Figma·Storybook | 서버 확정만 표시 |
 | A4 | 정산 데이터 계산 백엔드 API | — | `settlementService`·`StudySessionResult` |
 | A5 | MongoDB 연결·시드·mock-ai | P0.3 | A 시나리오 시드·엣지 보강 |
@@ -215,7 +215,7 @@ gantt
 |----|------|------|------|
 | P1.4.1 | 스톱워치 / 카운트다운 모드 UI | `TimerModeToggle` | `[x]` |
 | P1.4.2 | 시작 / 일시정지 / 종료 버튼 배치 | Figma 타이포·간격 | `[x]` |
-| P1.4.3 | 이탈 경고 팝업 + 타이머 **정지 UI** (목 트리거) | `FocusWarningModal` + 시연 버튼 | `[x]` |
+| P1.4.3 | 이탈 **인라인 경고** (비차단, 집중 시간 미적립) | `AlertBanner` + mock-ai/시뮬 토글 | `[x]` |
 | P1.4.4 | 학습 중 **성취/퀘스트/성장 배너 없음** (정적 검증) | `data-focus-protected` | `[x]` |
 | P1.4.5 | 종료 클릭 → 만족도·진척도 5점 입력 UI | 종료 플로우 셸 | `[x]` |
 | P1.4.6 | PNG 대비 시각 QA | `docs/design-qa/p1-visual-checklist.md` | `[x]` |
@@ -313,13 +313,13 @@ gantt
 
 | ID | 작업 | API | DoD | 상태 |
 |----|------|-----|-----|------|
-| P2.1.1 | 입실 기록 | `POST /api/attendance/check-in` | §2.1 | `[ ]` |
-| P2.1.2 | 퇴실 + 목적 필수 | `POST /api/attendance/check-out` | §2.1 | `[ ]` |
-| P2.1.3 | 귀가 리포트 발송 **모의** | service + log | §2.1 | `[ ]` |
-| P2.1.4 | 계획 CRUD | `/api/plans` | §2.1 | `[ ]` |
-| P2.1.5 | 계획 DnD 이동 | `PATCH /api/plans/:id` | §2.1 | `[ ]` |
+| P2.1.1 | 입실 기록 | `POST /api/attendance/check-in` | §2.1 | `[x]` |
+| P2.1.2 | 퇴실 + 목적 필수 | `POST /api/attendance/check-out` | §2.1 | `[x]` |
+| P2.1.3 | 귀가 리포트 발송 **모의** | service + log | §2.1 | `[x]` |
+| P2.1.4 | 계획 CRUD | `/api/plans` | §2.1 | `[x]` |
+| P2.1.5 | 계획 DnD 이동 | `PATCH /api/plans/:id` | §2.1 | `[~]` |
 | P2.1.6 | `userId` 일관 식별 | middleware/context | §2.1 | `[~]` |
-| P2.1.7 | FE: P1.9 모달 ↔ API 연동 | attendance + plans | §2.1 | `[ ]` |
+| P2.1.7 | FE: P1.9 모달 ↔ API 연동 | attendance + plans | §2.1 | `[x]` |
 
 **스키마:** `attendanceRecords`, `studyPlans` — `shared/types` 선행.
 
@@ -329,11 +329,11 @@ gantt
 
 | ID | 작업 | API / 모델 | DoD | 상태 |
 |----|------|------------|-----|------|
-| P2.2.1 | 학습 시작/종료 고도화 | `/api/study/session/*` | §2.3 | `[~]` |
+| P2.2.1 | 학습 시작/종료 고도화 | `/api/study/session/*` | §2.3 | `[x]` |
 | P2.2.2 | 스톱워치 vs 타이머 `StudySession.mode` | schema | §2.3 | `[ ]` |
-| P2.2.3 | 진척도·만족도 5점 저장 | end payload | §2.7 | `[ ]` |
-| P2.2.4 | FE: TimerPage ↔ API·Zustand | `stores/study*` | §2.3 | `[ ]` |
-| P2.2.5 | 클라이언트 시간 계측 + 서버 `duration` 정합 | service | §2.3 | `[ ]` |
+| P2.2.3 | 진척도·만족도 5점 저장 | end payload | §2.7 | `[x]` |
+| P2.2.4 | FE: TimerPage ↔ API·Zustand | `stores/study*` | §2.3 | `[x]` |
+| P2.2.5 | 클라이언트 시간 계측 + 서버 `duration` 정합 | `sessionDuration` | §2.3 | `[x]` |
 
 ---
 
@@ -341,11 +341,11 @@ gantt
 
 | ID | 작업 | 모듈 | DoD | 상태 |
 |----|------|------|-----|------|
-| P2.3.1 | mock-ai → 활성 세션 `aiEvents` 주입 | `/api/mock-ai/event` | §2.3 | `[~]` |
-| P2.3.2 | 이탈 연속 N회 → 세션 플래그 | service 규칙 | §2.3 | `[ ]` |
-| P2.3.3 | FE: 경고 팝업 + 타이머 자동 정지 | TimerPage | §2.3 | `[ ]` |
+| P2.3.1 | mock-ai → 활성 세션 `aiEvents` 주입 | `/api/mock-ai/event` | §2.3 | `[x]` |
+| P2.3.2 | 이탈 연속 N회 → 세션 플래그 | `focusAlert` + `focusAlertTriggered` | §2.3 | `[x]` |
+| P2.3.3 | FE: 인라인 경고 + 집중 시간 미적립 | `AlertBanner` / TimerPage | §2.3 | `[x]` |
 | P2.3.4 | 웹캠 원천 미저장 audit | 코드·로그 | §4 | `[ ]` |
-| P2.3.5 | E2E: mock-ai 이탈 → 경고 → 정지 | `focus-warning.spec.ts` | §2.3 | `[ ]` |
+| P2.3.5 | E2E: mock-ai 이탈 → 인라인 경고 | `ui-navigation.spec.ts` | §2.3 | `[x]` |
 
 ---
 
@@ -353,12 +353,12 @@ gantt
 
 | ID | 작업 | 모듈 | DoD | 상태 |
 |----|------|------|-----|------|
-| P2.4.1 | `conditionCode` 규칙 외부화 | `milestoneRules.ts` | §2.4 | `[ ]` |
-| P2.4.2 | 성취 판정 (종료 시만) | `settlementService` | §2.4 | `[~]` |
-| P2.4.3 | Goal 일/주/월 배정·갱신 | `goalService` | §2.5 | `[ ]` |
+| P2.4.1 | `conditionCode` 규칙 외부화 | `milestoneRules.ts` | §2.4 | `[x]` |
+| P2.4.2 | 성취 판정 (종료 시만) | `settlementService` | §2.4 | `[x]` |
+| P2.4.3 | Goal 일/주/월 배정·갱신 | `goalService` | §2.5 | `[x]` |
 | P2.4.4 | 점수 산정 + `$inc` (lifetime·monthly 동시) | `growthService` | §2.6 | `[~]` |
 | P2.4.5 | `StudySessionResult` DB 저장 **후** 조립 | settlementService | architecture §3.3 | `[~]` |
-| P2.4.6 | mongoose 트랜잭션 | session+milestone+goal+growth | architecture §3.3 | `[ ]` |
+| P2.4.6 | mongoose 트랜잭션 | session+milestone+goal | architecture §3.3 | `[~]` |
 
 ---
 
@@ -366,10 +366,10 @@ gantt
 
 | ID | 작업 | 경로 | DoD | 상태 |
 |----|------|------|-----|------|
-| P2.5.1 | 종료 플로우: 만족도·진척도 → `POST` end | TimerPage | §2.7, §2.9 | `[ ]` |
-| P2.5.2 | **서버 확정만** 모달 표시 (낙관적 UI 금지) | result-modal + store | §2.9 | `[~]` |
-| P2.5.3 | 4변형 실데이터 분기 | modal variants | §2.9, §3.6 | `[ ]` |
-| P2.5.4 | empty 결과 UX | modal | §2.9 | `[ ]` |
+| P2.5.1 | 종료 플로우: 만족도·진척도 → `POST` end | TimerPage | §2.7, §2.9 | `[x]` |
+| P2.5.2 | **서버 확정만** 모달 표시 (낙관적 UI 금지) | result-modal + store | §2.9 | `[x]` |
+| P2.5.3 | 4변형 실데이터 분기 | modal `data-variant` | §2.9, §3.6 | `[x]` |
+| P2.5.4 | empty 결과 UX | modal | §2.9 | `[x]` |
 | P2.5.5 | CTA → Garden / My (라우트+상태) | modal actions | §2.9 | `[ ]` |
 
 ---
@@ -378,9 +378,9 @@ gantt
 
 | ID | 작업 | DoD | 상태 |
 |----|------|-----|------|
-| P2.6.1 | 학습 중 성취/퀘스트 DOM·토스트 없음 | §2.3, §1 | `[ ]` |
-| P2.6.2 | E2E: 입실 → 타이머 → 종료 → 모달=DB | `study-flow-a.spec.ts` | `[ ]` |
-| P2.6.3 | E2E: focus-protection 회귀 | `focus-protection.spec.ts` | `[~]` |
+| P2.6.1 | 학습 중 성취/퀘스트 DOM·토스트 없음 | §2.3, §1 | `[x]` |
+| P2.6.2 | E2E: 입실 → 타이머 → 종료 → 모달=DB | `study-flow-a.spec.ts` | `[x]` |
+| P2.6.3 | E2E: focus-protection 회귀 | `focus-protection.spec.ts` | `[x]` |
 | P2.6.4 | E2E: 정산 재요청 일관성 | `settlement-consistency.spec.ts` | `[ ]` |
 
 **Exit (P2 / A파트):** acceptance §2.1, §2.3, §2.4, §2.5, §2.7(입력), §2.9 + project_context §1.5 정산 관련.
@@ -599,14 +599,13 @@ flowchart LR
 
 > `session_context.md` §2 상태 보드와 동기화.
 
-- **완료:** P0 전체 · **P1 전체 UI 셸 Exit** (6화면·fixture·Storybook·PageState·UI E2E·design-qa 체크리스트)
-- **잔여(P1):** 없음 (PNG 픽셀 대비는 `docs/design-qa/p1-visual-checklist.md` 수동 서명)
-- **스캐폴드만:** P2 세션·mock-ai·정산 / P3 Growth·My API
+- **완료:** P0 · P1 Exit · **P2.1·P2.2·P2.5 FE 연동(1차)** (입퇴실·계획·타이머·정산 모달 live)
+- **잔여(P1):** PNG 픽셀 대비 수동 (`docs/design-qa/p1-visual-checklist.md`)
+- **진행 중(P2):** P2.1.5 DnD·P2.4.6 growth 트랜잭션 포함·P2.6.4 정산 일관성 E2E
 - **다음 우선순위 (권장):**
-  1. P2.1 입퇴실·계획 API (+ FE fixture → 실 API 교체)
-  2. P2.2 타이머 세션 API 연동
-  3. P2.4 정산 백엔드 → P2.5 모달 서버 확정 연동
-  4. P2.6 A파트 E2E (`study-flow-a.spec.ts`)
+  1. P2.4.6 정산 트랜잭션에 growth `$inc` 포함
+  2. P2.4 정산 백엔드 고도화 (트랜잭션·goalService)
+  3. P2.6 `study-flow` E2E + 집중 보호 회귀
 
 ---
 

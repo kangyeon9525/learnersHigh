@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import type { EndStudySessionRequest, StartStudySessionRequest } from '@learners-high/shared';
 import { StudySessionModel } from '../db/models/index.js';
 import { toStudySessionDto } from '../db/mappers.js';
+import { shouldTriggerFocusAlert } from './focusAlert.js';
 import { settleStudySession } from './settlementService.js';
 import * as focusMonitorService from './focusMonitorService.js';
 
@@ -37,12 +38,22 @@ export async function appendAiEvent(
   status: 'focus' | 'distracted',
 ) {
   const event = { at: new Date().toISOString(), status };
-  const session = await StudySessionModel.findByIdAndUpdate(
+  let session = await StudySessionModel.findByIdAndUpdate(
     sessionId,
     { $push: { aiEvents: event } },
     { new: true },
   );
   if (!session) throw new Error('Session not found');
+
+  const events = (session.aiEvents ?? []).map((e) => ({
+    at: e.at,
+    status: e.status as 'focus' | 'distracted',
+  }));
+  if (!session.focusAlertTriggered && shouldTriggerFocusAlert(events)) {
+    session.focusAlertTriggered = true;
+    await session.save();
+  }
+
   await focusMonitorService.syncFromAiStatus(session.userId.toString(), status);
   return { session: toStudySessionDto(session), latestEvent: event };
 }

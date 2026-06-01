@@ -31,6 +31,13 @@
   font-size: 0.75rem;
   color: #fff;
   flex-shrink: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.plan-list__check:disabled {
+  cursor: default;
 }
 
 .plan-list__item--done .plan-list__check {

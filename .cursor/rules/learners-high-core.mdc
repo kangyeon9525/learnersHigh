@@ -7,7 +7,7 @@ alwaysApply: true
 
 ## 집중 우선
 
-- 학습 중: 집중/이탈 경고 + 타이머 자동 정지만
+- 학습 중: 집중/이탈 **인라인 경고**만 (비차단, 이탈 시 집중 시간 미적립)
 - 학습 중 성취·퀘스트·성장 알림/모달 **절대 금지**
 - 학습 종료: `POST /api/study/session/end` → `StudySessionResult` → `frontend/src/components/result-modal/`
 - 정산 모달: 서버 확정 결과만 (낙관적 UI 금지)

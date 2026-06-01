@@ -15,6 +15,8 @@ const studySessionSchema = new Schema(
     endedAt: { type: String },
     focusMinutes: { type: Number, default: 0 },
     satisfaction: { type: Number, min: 1, max: 5 },
+    progress: { type: Number, min: 1, max: 5 },
+    focusAlertTriggered: { type: Boolean, default: false },
     completed: { type: Boolean, default: false },
     aiEvents: { type: [aiEventSchema], default: [] },
   },

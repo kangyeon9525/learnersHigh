@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { checkIn } from '../api/attendance';
+import { checkIn, checkOut } from '../api/attendance';
+import { updatePlan } from '../api/plans';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { PlanList } from '../components/plans/PlanList';
@@ -33,6 +34,7 @@ export function HomePage() {
   const userId = useAppStore((s) => s.userId);
   const setAttendance = useAppStore((s) => s.setAttendance);
   const setFocusMonitor = useAppStore((s) => s.setFocusMonitor);
+  const setPlans = useAppStore((s) => s.setPlans);
   const dataSource = useAppStore((s) => s.dataSource);
   const navigate = useNavigate();
   const attendance = useAppStore((s) => s.attendance);
@@ -40,6 +42,7 @@ export function HomePage() {
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [checkOutOpen, setCheckOutOpen] = useState(false);
   const [checkingIn, setCheckingIn] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
 
   const presence = resolveStudyPresence(attendance, activeSession);
   const canCheckOut = attendance?.status === 'checked_in' && !activeSession;
@@ -107,7 +110,20 @@ export function HomePage() {
 
       <div className="home-page__grid">
         <Card className="home-page__plan" title="오늘의 학습 계획">
-          <PlanList plans={plans} />
+          <PlanList
+            plans={plans}
+            onToggleComplete={async (plan) => {
+              if (!userId || dataSource !== 'live') return;
+              try {
+                const updated = await updatePlan(plan.id, userId, {
+                  completed: !plan.completed,
+                });
+                setPlans(plans.map((p) => (p.id === updated.id ? updated : p)));
+              } catch {
+                /* 오프라인: UI만 토글하지 않음 */
+              }
+            }}
+          />
           <Button
             variant="primary"
             className="home-page__start"
@@ -210,15 +226,31 @@ export function HomePage() {
         open={checkOutOpen}
         mode="check-out"
         onClose={() => setCheckOutOpen(false)}
-        onCheckOut={(purpose) => {
-          setAttendance({
-            ...demoAttendance,
-            userId: userId ?? demoAttendance.userId,
-            status: 'checked_out',
-            checkOutAt: new Date().toISOString(),
-            purpose,
-          });
-          setFocusMonitor(null);
+        confirmLoading={checkingOut}
+        onCheckOut={async (purpose) => {
+          if (!userId) return;
+          setCheckingOut(true);
+          try {
+            const res = await checkOut({ userId, purpose });
+            setAttendance(res.record);
+            setFocusMonitor(null);
+            setCheckOutOpen(false);
+          } catch {
+            setAttendance({
+              ...demoAttendance,
+              userId,
+              status: 'checked_out',
+              checkOutAt: new Date().toISOString(),
+              purpose,
+            });
+            setFocusMonitor(null);
+            setCheckOutOpen(false);
+            if (dataSource === 'live') {
+              useAppStore.getState().setDataSource('fixture');
+            }
+          } finally {
+            setCheckingOut(false);
+          }
         }}
       />
     </div>
