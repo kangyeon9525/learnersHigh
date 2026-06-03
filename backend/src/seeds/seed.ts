@@ -11,16 +11,22 @@ import {
 import {
   DEMO_AI_DISTRACTED,
   DEMO_AI_FOCUS,
+  SEED_BASE_DATE,
   SEED_MONTH,
   SEED_USERS,
 } from './scenarios.js';
 
-function todayPlannedDate(): string {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
+/** 기준일 2026-06-05 09:00 UTC. 모든 상대 타임스탬프의 기준점. */
+const BASE_MS = Date.parse('2026-06-05T09:00:00.000Z');
+const DAY_MS = 24 * 60 * 60 * 1000;
+const HOUR_MS = 60 * 60 * 1000;
+const MIN_MS = 60 * 1000;
+
+/** 6/5 기준 day 오프셋(예: -1 = 6/4) + 시각을 ISO 문자열로 변환 */
+function offsetISO(dayOffset: number, hourOffset = 0, minuteOffset = 0): string {
+  return new Date(
+    BASE_MS + dayOffset * DAY_MS + hourOffset * HOUR_MS + minuteOffset * MIN_MS,
+  ).toISOString();
 }
 
 async function seed() {
@@ -59,26 +65,40 @@ async function seed() {
   for (const u of created) {
     console.log(`  - ${u.key} (${u.displayName}): ${u.userId}`);
   }
+  console.log(`[seed] Base date: ${SEED_BASE_DATE} (month ${SEED_MONTH})`);
   console.log('[seed] Demo API uses first user: GET /api/users/demo');
 
   await mongoose.disconnect();
 }
 
+/* ────────────────────────────────────────────────────────────────────
+ * 중간 케이스: 누적 묘목(stage 2) · 월간 새싹(stage 1)
+ *   - lifetime.totalScore = 350 (>=300 → 묘목)
+ *   - monthly.totalScore  =  90 (>= 50 → 새싹)
+ *   - 6월 1~4 일별 적립 기록 + 5월 후반 일부
+ * ─────────────────────────────────────────────────────────────────── */
 async function seedPrimary(userId: mongoose.Types.ObjectId) {
   await GrowthStateModel.create({
     userId,
     lifetime: {
-      totalScore: 80,
-      currentStage: 0,
-      history: [{ date: '2026-06-01', scoreDelta: 25, stage: 0 }],
+      totalScore: 350,
+      currentStage: 2,
+      history: [
+        { date: '2026-05-28', scoreDelta: 30, stage: 1 },
+        { date: '2026-05-30', scoreDelta: 35, stage: 2 },
+        { date: '2026-06-01', scoreDelta: 20, stage: 2 },
+        { date: '2026-06-02', scoreDelta: 25, stage: 2 },
+        { date: '2026-06-03', scoreDelta: 20, stage: 2 },
+        { date: '2026-06-04', scoreDelta: 25, stage: 2 },
+      ],
     },
     monthly: {
       currentMonth: SEED_MONTH,
-      totalScore: 40,
-      currentStage: 0,
+      totalScore: 90,
+      currentStage: 1,
       archive: [
-        { month: '2026-05', totalScore: 220, finalStage: 2 },
-        { month: '2026-04', totalScore: 150, finalStage: 1 },
+        { month: '2026-04', totalScore: 130, finalStage: 2 },
+        { month: '2026-05', totalScore: 230, finalStage: 3 },
       ],
     },
   });
@@ -89,14 +109,16 @@ async function seedPrimary(userId: mongoose.Types.ObjectId) {
       title: '첫 학습 완료',
       conditionCode: 'FIRST_SESSION',
       rewardScore: 50,
-      isAchieved: false,
+      isAchieved: true,
+      achievedAt: '2026-04-10T09:00:00.000Z',
     },
     {
       userId,
       title: '순공 30분 달성',
       conditionCode: 'FOCUS_30_MIN',
       rewardScore: 100,
-      isAchieved: false,
+      isAchieved: true,
+      achievedAt: '2026-06-02T11:30:00.000Z',
     },
     {
       userId,
@@ -108,27 +130,57 @@ async function seedPrimary(userId: mongoose.Types.ObjectId) {
   ]);
 
   await GoalModel.insertMany([
-    { userId, cycle: 'daily', targetValue: 60, currentValue: 20, rewardScore: 80, isCompleted: false },
-    { userId, cycle: 'weekly', targetValue: 300, currentValue: 120, rewardScore: 150, isCompleted: false },
-    { userId, cycle: 'monthly', targetValue: 1200, currentValue: 400, rewardScore: 300, isCompleted: false },
+    { userId, cycle: 'daily', targetValue: 60, currentValue: 0, rewardScore: 80, isCompleted: false },
+    { userId, cycle: 'weekly', targetValue: 300, currentValue: 195, rewardScore: 150, isCompleted: false },
+    { userId, cycle: 'monthly', targetValue: 1200, currentValue: 245, rewardScore: 300, isCompleted: false },
   ]);
 
-  await StudySessionModel.create({
-    userId,
-    startedAt: new Date(Date.now() - 3600_000).toISOString(),
-    endedAt: new Date(Date.now() - 1800_000).toISOString(),
-    focusMinutes: 25,
-    satisfaction: 4,
-    completed: true,
-    aiEvents: DEMO_AI_FOCUS,
-  });
+  // 6월 1~4 매일 학습 세션 (집중 우세, 점진적 향상)
+  await StudySessionModel.insertMany([
+    {
+      userId,
+      startedAt: offsetISO(-4, 1),  // 2026-06-01 10:00
+      endedAt: offsetISO(-4, 1, 25),
+      focusMinutes: 25,
+      satisfaction: 3,
+      completed: true,
+      aiEvents: DEMO_AI_FOCUS,
+    },
+    {
+      userId,
+      startedAt: offsetISO(-3, 1),  // 2026-06-02 10:00
+      endedAt: offsetISO(-3, 1, 50),
+      focusMinutes: 50,
+      satisfaction: 5,
+      completed: true,
+      aiEvents: DEMO_AI_FOCUS,
+    },
+    {
+      userId,
+      startedAt: offsetISO(-2, 1),  // 2026-06-03 10:00
+      endedAt: offsetISO(-2, 1, 35),
+      focusMinutes: 35,
+      satisfaction: 4,
+      completed: true,
+      aiEvents: DEMO_AI_FOCUS,
+    },
+    {
+      userId,
+      startedAt: offsetISO(-1, 1),  // 2026-06-04 10:00
+      endedAt: offsetISO(-1, 1, 40),
+      focusMinutes: 40,
+      satisfaction: 4,
+      completed: true,
+      aiEvents: DEMO_AI_FOCUS,
+    },
+  ]);
 
-  const plannedDate = todayPlannedDate();
+  // 오늘(6/5)의 학습 계획
   await StudyPlanModel.insertMany([
     {
       userId,
       title: '수학 · 4장 미적분',
-      plannedDate,
+      plannedDate: SEED_BASE_DATE,
       sortOrder: 0,
       durationMinutes: 90,
       completed: false,
@@ -136,7 +188,7 @@ async function seedPrimary(userId: mongoose.Types.ObjectId) {
     {
       userId,
       title: '영어 · 에세이 쓰기 연습',
-      plannedDate,
+      plannedDate: SEED_BASE_DATE,
       sortOrder: 1,
       durationMinutes: 45,
       completed: false,
@@ -144,7 +196,7 @@ async function seedPrimary(userId: mongoose.Types.ObjectId) {
     {
       userId,
       title: '과학 · 세포 생물학 복습',
-      plannedDate,
+      plannedDate: SEED_BASE_DATE,
       sortOrder: 2,
       durationMinutes: 60,
       completed: false,
@@ -152,65 +204,27 @@ async function seedPrimary(userId: mongoose.Types.ObjectId) {
   ]);
 }
 
+/* ────────────────────────────────────────────────────────────────────
+ * 미성장 케이스: 누적·월간 모두 씨앗(stage 0)
+ *   - lifetime.totalScore = 25  (<100 → 씨앗)
+ *   - monthly.totalScore  = 15  (<50  → 씨앗)
+ * ─────────────────────────────────────────────────────────────────── */
 async function seedDistracted(userId: mongoose.Types.ObjectId) {
   await GrowthStateModel.create({
     userId,
-    lifetime: { totalScore: 15, currentStage: 0, history: [] },
-    monthly: {
-      currentMonth: SEED_MONTH,
-      totalScore: 15,
-      currentStage: 0,
-      archive: [],
-    },
-  });
-
-  await MilestoneModel.insertMany([
-    {
-      userId,
-      title: '첫 학습 완료',
-      conditionCode: 'FIRST_SESSION',
-      rewardScore: 50,
-      isAchieved: true,
-      achievedAt: '2026-05-20T09:00:00.000Z',
-    },
-  ]);
-
-  await GoalModel.create({
-    userId,
-    cycle: 'daily',
-    targetValue: 60,
-    currentValue: 5,
-    rewardScore: 80,
-    isCompleted: false,
-  });
-
-  await StudySessionModel.create({
-    userId,
-    startedAt: new Date(Date.now() - 7200_000).toISOString(),
-    endedAt: new Date(Date.now() - 5400_000).toISOString(),
-    focusMinutes: 8,
-    satisfaction: 2,
-    completed: true,
-    aiEvents: DEMO_AI_DISTRACTED,
-  });
-}
-
-async function seedAchiever(userId: mongoose.Types.ObjectId) {
-  await GrowthStateModel.create({
-    userId,
     lifetime: {
-      totalScore: 680,
-      currentStage: 3,
+      totalScore: 25,
+      currentStage: 0,
       history: [
-        { date: '2026-05-28', scoreDelta: 120, stage: 2 },
-        { date: '2026-05-30', scoreDelta: 80, stage: 3 },
+        { date: '2026-05-28', scoreDelta: 10, stage: 0 },
+        { date: '2026-06-02', scoreDelta: 15, stage: 0 },
       ],
     },
     monthly: {
       currentMonth: SEED_MONTH,
-      totalScore: 210,
-      currentStage: 2,
-      archive: [{ month: '2026-05', totalScore: 280, finalStage: 3 }],
+      totalScore: 15,
+      currentStage: 0,
+      archive: [{ month: '2026-05', totalScore: 10, finalStage: 0 }],
     },
   });
 
@@ -221,15 +235,14 @@ async function seedAchiever(userId: mongoose.Types.ObjectId) {
       conditionCode: 'FIRST_SESSION',
       rewardScore: 50,
       isAchieved: true,
-      achievedAt: '2026-05-01T10:00:00.000Z',
+      achievedAt: '2026-06-02T14:00:00.000Z',
     },
     {
       userId,
       title: '순공 30분 달성',
       conditionCode: 'FOCUS_30_MIN',
       rewardScore: 100,
-      isAchieved: true,
-      achievedAt: '2026-05-15T11:00:00.000Z',
+      isAchieved: false,
     },
     {
       userId,
@@ -241,19 +254,187 @@ async function seedAchiever(userId: mongoose.Types.ObjectId) {
   ]);
 
   await GoalModel.insertMany([
-    { userId, cycle: 'daily', targetValue: 60, currentValue: 60, rewardScore: 80, isCompleted: true },
-    { userId, cycle: 'weekly', targetValue: 300, currentValue: 280, rewardScore: 150, isCompleted: false },
+    { userId, cycle: 'daily', targetValue: 60, currentValue: 5, rewardScore: 80, isCompleted: false },
+    { userId, cycle: 'weekly', targetValue: 300, currentValue: 20, rewardScore: 150, isCompleted: false },
+    { userId, cycle: 'monthly', targetValue: 1200, currentValue: 28, rewardScore: 300, isCompleted: false },
   ]);
 
+  // 6/2 짧은 이탈성 세션
   await StudySessionModel.create({
     userId,
-    startedAt: new Date(Date.now() - 86400_000).toISOString(),
-    endedAt: new Date(Date.now() - 82800_000).toISOString(),
-    focusMinutes: 55,
-    satisfaction: 5,
+    startedAt: offsetISO(-3, 5),  // 2026-06-02 14:00
+    endedAt: offsetISO(-3, 5, 12),
+    focusMinutes: 8,
+    satisfaction: 2,
     completed: true,
-    aiEvents: DEMO_AI_FOCUS,
+    focusAlertTriggered: true,
+    aiEvents: DEMO_AI_DISTRACTED,
   });
+
+  // 오늘(6/5)의 학습 계획 — 가벼움
+  await StudyPlanModel.insertMany([
+    {
+      userId,
+      title: '수학 · 기초 연산 워밍업',
+      plannedDate: SEED_BASE_DATE,
+      sortOrder: 0,
+      durationMinutes: 30,
+      completed: false,
+    },
+    {
+      userId,
+      title: '영어 · 단어 20개 암기',
+      plannedDate: SEED_BASE_DATE,
+      sortOrder: 1,
+      durationMinutes: 20,
+      completed: false,
+    },
+  ]);
+}
+
+/* ────────────────────────────────────────────────────────────────────
+ * 완성 케이스: 누적·월간 모두 성목(stage 4)
+ *   - lifetime.totalScore = 1280 (>=1000 → 성목)
+ *   - monthly.totalScore  =  320 (>= 300 → 성목/개화)
+ *   - 매일 풀집중, 모든 성취 달성, 일일/주간/월간 퀘스트 완료
+ * ─────────────────────────────────────────────────────────────────── */
+async function seedAchiever(userId: mongoose.Types.ObjectId) {
+  await GrowthStateModel.create({
+    userId,
+    lifetime: {
+      totalScore: 1280,
+      currentStage: 4,
+      history: [
+        { date: '2026-05-28', scoreDelta: 70, stage: 3 },
+        { date: '2026-05-29', scoreDelta: 65, stage: 3 },
+        { date: '2026-05-30', scoreDelta: 75, stage: 4 },
+        { date: '2026-05-31', scoreDelta: 55, stage: 4 },
+        { date: '2026-06-01', scoreDelta: 85, stage: 4 },
+        { date: '2026-06-02', scoreDelta: 75, stage: 4 },
+        { date: '2026-06-03', scoreDelta: 80, stage: 4 },
+        { date: '2026-06-04', scoreDelta: 80, stage: 4 },
+      ],
+    },
+    monthly: {
+      currentMonth: SEED_MONTH,
+      totalScore: 320,
+      currentStage: 4,
+      archive: [
+        { month: '2026-03', totalScore: 200, finalStage: 3 },
+        { month: '2026-04', totalScore: 260, finalStage: 3 },
+        { month: '2026-05', totalScore: 310, finalStage: 4 },
+      ],
+    },
+  });
+
+  await MilestoneModel.insertMany([
+    {
+      userId,
+      title: '첫 학습 완료',
+      conditionCode: 'FIRST_SESSION',
+      rewardScore: 50,
+      isAchieved: true,
+      achievedAt: '2026-03-15T10:00:00.000Z',
+    },
+    {
+      userId,
+      title: '순공 30분 달성',
+      conditionCode: 'FOCUS_30_MIN',
+      rewardScore: 100,
+      isAchieved: true,
+      achievedAt: '2026-04-02T11:00:00.000Z',
+    },
+    {
+      userId,
+      title: '순공 60분 달성',
+      conditionCode: 'FOCUS_60_MIN',
+      rewardScore: 200,
+      isAchieved: true,
+      achievedAt: '2026-05-10T11:00:00.000Z',
+    },
+  ]);
+
+  await GoalModel.insertMany([
+    { userId, cycle: 'daily', targetValue: 60, currentValue: 80, rewardScore: 80, isCompleted: true },
+    { userId, cycle: 'weekly', targetValue: 300, currentValue: 310, rewardScore: 150, isCompleted: true },
+    { userId, cycle: 'monthly', targetValue: 1200, currentValue: 1350, rewardScore: 300, isCompleted: true },
+  ]);
+
+  // 6월 1~4 매일 풀집중 세션
+  await StudySessionModel.insertMany([
+    {
+      userId,
+      startedAt: offsetISO(-4, 0),  // 2026-06-01 09:00
+      endedAt: offsetISO(-4, 0, 70),
+      focusMinutes: 70,
+      satisfaction: 4,
+      completed: true,
+      aiEvents: DEMO_AI_FOCUS,
+    },
+    {
+      userId,
+      startedAt: offsetISO(-3, 0),  // 2026-06-02 09:00
+      endedAt: offsetISO(-3, 0, 80),
+      focusMinutes: 80,
+      satisfaction: 5,
+      completed: true,
+      aiEvents: DEMO_AI_FOCUS,
+    },
+    {
+      userId,
+      startedAt: offsetISO(-2, 0),  // 2026-06-03 09:00
+      endedAt: offsetISO(-2, 0, 75),
+      focusMinutes: 75,
+      satisfaction: 5,
+      completed: true,
+      aiEvents: DEMO_AI_FOCUS,
+    },
+    {
+      userId,
+      startedAt: offsetISO(-1, 0),  // 2026-06-04 09:00
+      endedAt: offsetISO(-1, 0, 85),
+      focusMinutes: 85,
+      satisfaction: 5,
+      completed: true,
+      aiEvents: DEMO_AI_FOCUS,
+    },
+  ]);
+
+  // 오늘(6/5)의 학습 계획 — 일부 완료
+  await StudyPlanModel.insertMany([
+    {
+      userId,
+      title: '국어 · 현대 시 분석',
+      plannedDate: SEED_BASE_DATE,
+      sortOrder: 0,
+      durationMinutes: 60,
+      completed: true,
+    },
+    {
+      userId,
+      title: '수학 · 확률과 통계',
+      plannedDate: SEED_BASE_DATE,
+      sortOrder: 1,
+      durationMinutes: 90,
+      completed: true,
+    },
+    {
+      userId,
+      title: '영어 · 장문 독해',
+      plannedDate: SEED_BASE_DATE,
+      sortOrder: 2,
+      durationMinutes: 60,
+      completed: false,
+    },
+    {
+      userId,
+      title: '한국사 · 근현대사 정리',
+      plannedDate: SEED_BASE_DATE,
+      sortOrder: 3,
+      durationMinutes: 45,
+      completed: false,
+    },
+  ]);
 }
 
 seed().catch((err) => {
