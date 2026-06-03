@@ -111,7 +111,7 @@ export function SessionResultPanel({
               🏅 마이페이지 보관함
             </button>
           )}
-          <button type="button" className="result-modal__close" onClick={onClose}>
+          <button type="button" className="result-modal__close" data-testid="close-result" onClick={onClose}>
             닫기
           </button>
         </div>

@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
-import type { EndStudySessionRequest, StudySessionResult } from '@learners-high/shared';
+import type { GrowthState, StudySessionResult } from '@learners-high/shared';
+import type { EndStudySessionRequest } from '@learners-high/shared';
 import { StudySessionModel } from '../db/models/index.js';
 import { toStudySessionDto } from '../db/mappers.js';
 import { applyFocusMinutesToGoals } from './goalService.js';
-import { applyScoreToGrowth } from './growthService.js';
+import { applyScoreInsideTransaction, getOrCreateGrowthState } from './growthService.js';
 import { evaluateMilestones } from './milestoneRules.js';
 import { clampFocusMinutes } from './sessionDuration.js';
 
@@ -14,57 +15,67 @@ export async function settleStudySession(
   sessionId: string,
 ): Promise<StudySessionResult> {
   const focusMinutes = clampFocusMinutes(body.startedAt, body.endedAt, body.focusMinutes);
+
+  // 트랜잭션 전: growth 문서 존재 보장 + before 스냅샷 획득
+  const before = await getOrCreateGrowthState(body.userId);
+
   const dbSession = await mongoose.startSession();
 
-  let sessionDto: ReturnType<typeof toStudySessionDto>;
-  let newMilestones: StudySessionResult['newMilestones'];
-  let completedGoals: StudySessionResult['completedGoals'];
-  let earnedScore: number;
+  let sessionDto: ReturnType<typeof toStudySessionDto> | undefined;
+  let newMilestones: StudySessionResult['newMilestones'] = [];
+  let completedGoals: StudySessionResult['completedGoals'] = [];
+  let earnedScore = 0;
+  let after: GrowthState = before;
 
   try {
-    dbSession.startTransaction();
+    // withTransaction 으로 TransientTransactionError 자동 재시도 처리
+    await dbSession.withTransaction(async () => {
+      const session = await StudySessionModel.findByIdAndUpdate(
+        sessionId,
+        {
+          endedAt: body.endedAt,
+          focusMinutes,
+          satisfaction: body.satisfaction,
+          progress: body.progress,
+          completed: true,
+          ...(body.aiEvents ? { aiEvents: body.aiEvents } : {}),
+        },
+        { new: true, session: dbSession },
+      );
 
-    const session = await StudySessionModel.findByIdAndUpdate(
-      sessionId,
-      {
-        endedAt: body.endedAt,
+      if (!session) throw new Error('Session not found');
+
+      const baseScore = focusMinutes * SESSION_BASE_SCORE_PER_MINUTE;
+      const { newMilestones: milestones, bonusScore: milestoneBonus } = await evaluateMilestones(
+        body.userId,
         focusMinutes,
-        satisfaction: body.satisfaction,
-        progress: body.progress,
-        completed: true,
-        ...(body.aiEvents ? { aiEvents: body.aiEvents } : {}),
-      },
-      { new: true, session: dbSession },
-    );
+        dbSession,
+      );
+      const { completedGoals: goals, bonusScore: goalBonus } = await applyFocusMinutesToGoals(
+        body.userId,
+        focusMinutes,
+        dbSession,
+      );
 
-    if (!session) throw new Error('Session not found');
+      earnedScore = baseScore + milestoneBonus + goalBonus;
 
-    const baseScore = focusMinutes * SESSION_BASE_SCORE_PER_MINUTE;
-    const { newMilestones: milestones, bonusScore: milestoneBonus } = await evaluateMilestones(
-      body.userId,
-      focusMinutes,
-      dbSession,
-    );
-    const { completedGoals: goals, bonusScore: goalBonus } = await applyFocusMinutesToGoals(
-      body.userId,
-      focusMinutes,
-      dbSession,
-    );
+      after = await applyScoreInsideTransaction(
+        body.userId,
+        earnedScore,
+        body.endedAt,
+        before.lifetime.currentStage,
+        dbSession,
+      );
 
-    await dbSession.commitTransaction();
-
-    sessionDto = toStudySessionDto(session);
-    newMilestones = milestones;
-    completedGoals = goals;
-    earnedScore = baseScore + milestoneBonus + goalBonus;
-  } catch (err) {
-    await dbSession.abortTransaction();
-    throw err;
+      sessionDto = toStudySessionDto(session);
+      newMilestones = milestones;
+      completedGoals = goals;
+    });
   } finally {
-    dbSession.endSession();
+    await dbSession.endSession();
   }
 
-  const { before, after } = await applyScoreToGrowth(body.userId, earnedScore, body.endedAt);
+  if (!sessionDto) throw new Error('Transaction failed: sessionDto not set');
 
   return {
     sessionId: sessionDto.id,

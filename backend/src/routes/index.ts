@@ -5,6 +5,7 @@ import * as userController from '../controllers/userController.js';
 import * as attendanceController from '../controllers/attendanceController.js';
 import * as planController from '../controllers/planController.js';
 import * as focusMonitorController from '../controllers/focusMonitorController.js';
+import * as reportController from '../controllers/reportController.js';
 
 export const apiRouter = Router();
 
@@ -33,5 +34,10 @@ apiRouter.get('/study/session/active/:userId', studyController.getActiveSession)
 apiRouter.post('/mock-ai/event', studyController.injectAiEvent);
 
 apiRouter.get('/growth/:userId', growthController.getGrowth);
+apiRouter.get('/growth/:userId/history', growthController.getGrowthHistory);
 apiRouter.get('/milestones/:userId', growthController.getMilestones);
 apiRouter.get('/goals/:userId', growthController.getGoals);
+
+apiRouter.get('/reports/daily/:userId', reportController.getDailyReportHandler);
+apiRouter.get('/reports/monthly/:userId', reportController.getMonthlyReportHandler);
+apiRouter.get('/reports/ranking', reportController.getRankingHandler);

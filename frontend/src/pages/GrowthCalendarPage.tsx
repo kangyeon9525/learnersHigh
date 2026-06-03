@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import type { GrowthHistoryEntry, MonthlyArchiveEntry } from '@learners-high/shared';
 import { Card } from '../components/ui/Card';
 import { useAppStore } from '../stores/useAppStore';
+import { fetchGrowthHistory } from '../api/growth';
 import { stageLabel } from '../utils/format';
 import './GrowthCalendarPage.css';
 
@@ -15,7 +17,10 @@ interface DayCell {
   stage?: number;
 }
 
-function buildCalendar(month: string, history: { date: string; scoreDelta: number; stage: number }[]): DayCell[] {
+function buildCalendar(
+  month: string,
+  history: { date: string; scoreDelta: number; stage: number }[],
+): DayCell[] {
   const year = Number(month.slice(0, 4));
   const monthIndex = Number(month.slice(5, 7)) - 1;
   const firstWeekday = new Date(year, monthIndex, 1).getDay();
@@ -36,10 +41,27 @@ function buildCalendar(month: string, history: { date: string; scoreDelta: numbe
   return cells;
 }
 
-/** 성장 캘린더 드릴다운 (P1.6.4 셸). TODO(P3.1.5): /api/growth/:id/history 연동 */
+/** P3.2: 성장 캘린더 드릴다운 — history API 연동 */
 export function GrowthCalendarPage() {
   const growth = useAppStore((s) => s.growth);
+  const userId = useAppStore((s) => s.userId);
+  const dataSource = useAppStore((s) => s.dataSource);
+
   const [view, setView] = useState<CalendarView>('lifetime');
+  const [history, setHistory] = useState<GrowthHistoryEntry[]>(growth?.lifetime.history ?? []);
+  const [archive, setArchive] = useState<MonthlyArchiveEntry[]>(
+    growth?.monthly.archive ?? [],
+  );
+
+  useEffect(() => {
+    if (!userId || dataSource !== 'live') return;
+    void fetchGrowthHistory(userId).then((res) => {
+      setHistory(res.history);
+      setArchive(res.archive);
+    }).catch(() => {
+      // fallback: store 데이터 유지
+    });
+  }, [userId, dataSource]);
 
   if (!growth) {
     return (
@@ -50,8 +72,8 @@ export function GrowthCalendarPage() {
   }
 
   const month = growth.monthly.currentMonth;
-  const cells = buildCalendar(month, growth.lifetime.history);
-  const monthHistory = growth.lifetime.history.filter((h) => h.date.startsWith(month));
+  const cells = buildCalendar(month, history);
+  const monthHistory = history.filter((h) => h.date.startsWith(month));
 
   return (
     <div className="growth-calendar" data-testid="growth-calendar">
@@ -129,13 +151,17 @@ export function GrowthCalendarPage() {
             </ul>
           ) : (
             <ul className="growth-calendar__history" data-testid="calendar-archive">
-              {growth.monthly.archive.map((a) => (
-                <li key={a.month}>
-                  <span>{a.month}</span>
-                  <span>{a.totalScore}점</span>
-                  <span className="muted">{stageLabel(a.finalStage)}</span>
-                </li>
-              ))}
+              {archive.length === 0 ? (
+                <li className="muted">아카이브된 달이 없습니다.</li>
+              ) : (
+                archive.map((a) => (
+                  <li key={a.month}>
+                    <span>{a.month}</span>
+                    <span>{a.totalScore}점</span>
+                    <span className="muted">{stageLabel(a.finalStage)}</span>
+                  </li>
+                ))
+              )}
             </ul>
           )}
         </Card>

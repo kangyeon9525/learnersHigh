@@ -6,6 +6,9 @@ import { GrowthDashboardPage } from './pages/GrowthDashboardPage';
 import { GrowthCalendarPage } from './pages/GrowthCalendarPage';
 import { MyPage } from './pages/MyPage';
 import { DailyReportPage } from './pages/DailyReportPage';
+import { MonthlyReportPage } from './pages/MonthlyReportPage';
+import { LibraryPage } from './pages/LibraryPage';
+import { RankingPage } from './pages/RankingPage';
 
 export default function App() {
   return (
@@ -17,6 +20,9 @@ export default function App() {
         <Route path="/growth/calendar" element={<GrowthCalendarPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/report" element={<DailyReportPage />} />
+        <Route path="/monthly-report" element={<MonthlyReportPage />} />
+        <Route path="/library" element={<LibraryPage />} />
+        <Route path="/ranking" element={<RankingPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppShell>

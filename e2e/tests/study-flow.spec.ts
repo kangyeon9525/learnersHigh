@@ -8,6 +8,10 @@ test.describe('학습 루프 → 종료 정산', () => {
 
   test('학습 시작·종료 후 정산 모달 노출', async ({ page }) => {
     await page.goto('/timer');
+    await expect(page.getByTestId('timer-hydrating')).toHaveCount(0, { timeout: 30_000 });
+    const reset = page.getByTestId('reset-study');
+    if (await reset.isVisible()) await reset.click();
+    await expect(page.getByTestId('start-study')).toBeVisible({ timeout: 15_000 });
     await page.getByTestId('start-study').click();
     await expect(page.getByTestId('timer-display')).toBeVisible();
 

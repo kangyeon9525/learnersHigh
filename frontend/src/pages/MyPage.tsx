@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Milestone } from '@learners-high/shared';
 import { Card } from '../components/ui/Card';
 import { AchievementGrid } from '../components/mypage/AchievementGrid';
+import { fetchGoals, fetchGrowth, fetchMilestones } from '../api/growth';
 import { useAppStore } from '../stores/useAppStore';
 import { goalCycleLabel, stageLabel } from '../utils/format';
 import './MyPage.css';
@@ -19,8 +20,27 @@ export function MyPage() {
   const milestones = useAppStore((s) => s.milestones);
   const goals = useAppStore((s) => s.goals);
   const growth = useAppStore((s) => s.growth);
+  const userId = useAppStore((s) => s.userId);
+  const dataSource = useAppStore((s) => s.dataSource);
+  const setGrowth = useAppStore((s) => s.setGrowth);
+  const setMilestones = useAppStore((s) => s.setMilestones);
+  const setGoals = useAppStore((s) => s.setGoals);
   const [tab, setTab] = useState<MyTab>('achievements');
   const [selected, setSelected] = useState<Milestone | null>(null);
+
+  // P3.3: 마운트 시 최신 데이터 리프레시 (정산 후 네비게이션 포함)
+  useEffect(() => {
+    if (!userId || dataSource !== 'live') return;
+    void Promise.all([
+      fetchGrowth(userId),
+      fetchMilestones(userId),
+      fetchGoals(userId),
+    ]).then(([g, m, goals]) => {
+      setGrowth(g);
+      setMilestones(m);
+      setGoals(goals);
+    }).catch(() => { /* store 데이터 유지 */ });
+  }, [userId, dataSource, setGrowth, setMilestones, setGoals]);
 
   const achievedCount = milestones.filter((m) => m.isAchieved).length;
 
@@ -42,6 +62,12 @@ export function MyPage() {
           </Link>
           <Link to="/growth/calendar" className="mypage__link" data-testid="mypage-hub-calendar">
             성장 캘린더 →
+          </Link>
+          <Link to="/ranking" className="mypage__link" data-testid="mypage-hub-ranking">
+            지점 학습 현황 →
+          </Link>
+          <Link to="/monthly-report" className="mypage__link" data-testid="mypage-hub-monthly">
+            월간 리포트 →
           </Link>
         </div>
       </header>

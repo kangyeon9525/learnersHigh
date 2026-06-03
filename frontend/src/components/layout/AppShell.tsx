@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { bootstrapApp } from '../../utils/bootstrap';
 import { useAppStore } from '../../stores/useAppStore';
+import { ErrorBoundary } from '../ui/ErrorBoundary';
 import { PageState } from '../ui/PageState';
 import { SessionResultModal } from '../result-modal/SessionResultModal';
 import { NavIcon, type NavIconName } from './NavIcon';
@@ -19,7 +20,8 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/timer', label: '학습', icon: 'timer', testId: 'nav-timer' },
   { to: '/growth', label: '성장 정원', icon: 'growth', testId: 'nav-growth' },
   { to: '/mypage', label: '마이', icon: 'mypage', testId: 'nav-mypage' },
-  { to: '/report', label: '데일리 리포트', icon: 'report', testId: 'nav-report' },
+  { to: '/report', label: '데일리', icon: 'report', testId: 'nav-report' },
+  { to: '/library', label: '라이브러리', icon: 'library', testId: 'nav-library' },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -95,7 +97,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             데모 데이터로 표시 중입니다. 실시간 데이터는 백엔드 연결 후 제공됩니다.
           </div>
         )}
-        {children}
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
       </main>
 
       <SessionResultModal />

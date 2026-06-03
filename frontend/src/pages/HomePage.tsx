@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { checkIn, checkOut } from '../api/attendance';
+import { fetchGoals, fetchGrowth, fetchMilestones } from '../api/growth';
 import { updatePlan } from '../api/plans';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -44,6 +45,24 @@ export function HomePage() {
   const [checkingIn, setCheckingIn] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
 
+  const setGrowth = useAppStore((s) => s.setGrowth);
+  const setMilestones = useAppStore((s) => s.setMilestones);
+  const setGoals = useAppStore((s) => s.setGoals);
+
+  // P3.4: 홈 마운트 시 성장 위젯 최신값 갱신 (정산 직후 네비게이션 포함)
+  useEffect(() => {
+    if (!userId || dataSource !== 'live') return;
+    void Promise.all([
+      fetchGrowth(userId),
+      fetchMilestones(userId),
+      fetchGoals(userId),
+    ]).then(([g, m, gl]) => {
+      setGrowth(g);
+      setMilestones(m);
+      setGoals(gl);
+    }).catch(() => { /* store 데이터 유지 */ });
+  }, [userId, dataSource, setGrowth, setMilestones, setGoals]);
+
   const presence = resolveStudyPresence(attendance, activeSession);
   const canCheckOut = attendance?.status === 'checked_in' && !activeSession;
 
@@ -83,6 +102,19 @@ export function HomePage() {
     }
   };
 
+  /** P5.2.1: 계획 완료 토글 — 낙관적 업데이트 + reconcile (정산 모달은 서버 확정값만, 별도) */
+  const handlePlanToggle = async (plan: import('@learners-high/shared').StudyPlan) => {
+    if (!userId || dataSource !== 'live') return;
+    const prevPlans = plans; // reconcile용 스냅샷
+    setPlans(plans.map((p) => (p.id === plan.id ? { ...p, completed: !p.completed } : p)));
+    try {
+      const updated = await updatePlan(plan.id, userId, { completed: !plan.completed });
+      setPlans(prevPlans.map((p) => (p.id === updated.id ? updated : p)));
+    } catch {
+      setPlans(prevPlans); // reconcile: 원상 복귀
+    }
+  };
+
   const dailyGoals = goals.filter((g) => g.cycle === 'daily');
   const newAchievement = useAppStore((s) => s.milestones).find((m) => m.isAchieved);
 
@@ -112,17 +144,7 @@ export function HomePage() {
         <Card className="home-page__plan" title="오늘의 학습 계획">
           <PlanList
             plans={plans}
-            onToggleComplete={async (plan) => {
-              if (!userId || dataSource !== 'live') return;
-              try {
-                const updated = await updatePlan(plan.id, userId, {
-                  completed: !plan.completed,
-                });
-                setPlans(plans.map((p) => (p.id === updated.id ? updated : p)));
-              } catch {
-                /* 오프라인: UI만 토글하지 않음 */
-              }
-            }}
+            onToggleComplete={handlePlanToggle}
           />
           <Button
             variant="primary"

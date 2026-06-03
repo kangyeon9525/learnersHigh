@@ -172,6 +172,90 @@ export interface StudyPlan {
   completed: boolean;
 }
 
+/** 데일리 리포트 세션 항목 */
+export interface DailyReportSession {
+  sessionId: string;
+  startedAt: string;
+  endedAt: string;
+  focusMinutes: number;
+  satisfaction?: SatisfactionScore;
+  progress?: SatisfactionScore;
+}
+
+/** GET /api/reports/daily/:userId 응답 DTO */
+export interface DailyReport {
+  date: string;
+  userId: string;
+  checkInAt?: string;
+  checkOutAt?: string;
+  sessions: DailyReportSession[];
+  totalFocusMinutes: number;
+  totalDurationMinutes: number;
+  focusEfficiency: number;
+  earnedScore: number;
+}
+
+/** GET /api/growth/:userId/history 응답 DTO */
+export interface GrowthHistoryResponse {
+  userId: string;
+  history: GrowthHistoryEntry[];
+  archive: MonthlyArchiveEntry[];
+}
+
+/** 월간 리포트 일별 요약 항목 */
+export interface MonthlyReportDay {
+  date: string;
+  focusMinutes: number;
+  sessionCount: number;
+  earnedScore: number;
+}
+
+/** GET /api/reports/monthly/:userId 응답 DTO */
+export interface MonthlyReport {
+  month: string;
+  userId: string;
+  totalFocusMinutes: number;
+  totalSessions: number;
+  totalEarnedScore: number;
+  avgFocusMinutesPerDay: number;
+  activeDays: number;
+  focusEfficiency: number;
+  days: MonthlyReportDay[];
+  growthArchive?: {
+    totalScore: number;
+    finalStage: number;
+  };
+}
+
+/** P4.3: 지점 가상 순위 */
+export interface RankingEntry {
+  rank: number;
+  userId: string;
+  displayName: string;
+  monthlyScore: number;
+  currentStage: number;
+  isCurrentUser: boolean;
+}
+
+export interface BranchRanking {
+  branchId: string;
+  month: string;
+  entries: RankingEntry[];
+  currentUserRank?: number;
+}
+
+/** P4.3: 라이브러리 */
+export type LibraryCategory = 'study' | 'class' | 'life';
+
+export interface LibraryItem {
+  id: string;
+  title: string;
+  category: LibraryCategory;
+  description: string;
+  tags: string[];
+  linkedUrl?: string;
+}
+
 export interface CheckInRequest {
   userId: string;
   checkInAt?: string;

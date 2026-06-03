@@ -81,6 +81,11 @@ test.describe('P1 UI 셸 네비게이션', () => {
     await expect(page.getByTestId('focus-warning')).toHaveCount(0);
   });
 
+  test('사이드바 라이브러리 진입', async ({ page }) => {
+    await page.getByTestId('nav-library').click();
+    await expect(page.getByTestId('library')).toBeVisible({ timeout: 10_000 });
+  });
+
   test('홈에서 학습 시작 진입', async ({ page }) => {
     await page.getByTestId('home-start-study').click();
     await expect(page.getByTestId('timer-page')).toBeVisible();
@@ -95,7 +100,11 @@ test.describe('P1 UI 셸 네비게이션', () => {
     await page.getByTestId('home-check-in').click();
     await page.getByTestId('attendance-confirm').click();
     await expect(page.getByTestId('timer-page')).toBeVisible();
+    await expect(page.getByTestId('timer-hydrating')).toHaveCount(0, { timeout: 30_000 });
+    const reset2 = page.getByTestId('reset-study');
+    if (await reset2.isVisible()) await reset2.click();
     await page.getByTestId('nav-home').click();
+    await expect(page.getByTestId('home-check-out')).toBeVisible({ timeout: 10_000 });
     await page.getByTestId('home-check-out').click();
     await page.getByTestId('purpose-home').click();
     await page.getByTestId('attendance-confirm').click();

@@ -1,0 +1,35 @@
+/* ── ErrorBoundary fallback UI ────────────────────────────── */
+
+.error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  min-height: 280px;
+  text-align: center;
+}
+
+.error-boundary__icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.error-boundary__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.error-boundary__message {
+  margin: 0;
+  font-size: 0.85rem;
+  max-width: 400px;
+}
+
+.error-boundary__retry {
+  margin-top: var(--space-sm);
+}

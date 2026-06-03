@@ -1,0 +1,197 @@
+/* ── CoachingModal ─────────────────────────────────────────── */
+
+.coaching-select__desc {
+  margin: 0 0 var(--space-md);
+  font-size: 0.88rem;
+}
+
+/* 코치 선택 라디오 카드 */
+.coaching-select__coaches {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.coaching-coach {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.coaching-coach:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.coaching-coach--selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.coaching-coach__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.coaching-coach__name {
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.coaching-coach__specialty {
+  font-size: 0.78rem;
+}
+
+.coaching-coach__bio {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
+
+/* 일정 슬롯 */
+.coaching-slots {
+  margin-bottom: var(--space-md);
+}
+
+.coaching-slots__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.coaching-slots__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.coaching-slot {
+  padding: 0.35rem 0.8rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.coaching-slot:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.coaching-slot--active {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* 액션 버튼 행 */
+.coaching-select__actions,
+.coaching-confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+/* 확인 화면 */
+.coaching-confirm__info {
+  margin-bottom: var(--space-md);
+}
+
+.coaching-confirm__info p {
+  margin: 0 0 0.25rem;
+  font-size: 0.95rem;
+}
+
+.coaching-confirm__slot {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* QR mock */
+.coaching-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: var(--space-md) auto;
+}
+
+.coaching-qr__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  width: 140px;
+  height: 140px;
+  padding: 8px;
+  border: 2px solid var(--color-text);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.coaching-qr__cell {
+  border-radius: 1px;
+  background: #fff;
+}
+
+.coaching-qr__cell--filled {
+  background: var(--color-text);
+}
+
+.coaching-qr__label {
+  font-size: 0.76rem;
+  margin: 0;
+  text-align: center;
+}
+
+/* 링크 */
+.coaching-confirm__link-wrap {
+  text-align: center;
+  margin: var(--space-sm) 0;
+}
+
+.coaching-confirm__link {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  background: var(--color-primary-soft);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.coaching-confirm__link:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.coaching-confirm__notice {
+  font-size: 0.76rem;
+  text-align: center;
+  margin: var(--space-sm) 0 0;
+}
+
+/* 스크린 리더 전용 숨김 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+}

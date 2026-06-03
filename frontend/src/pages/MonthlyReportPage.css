@@ -1,0 +1,364 @@
+/* ── 히트맵 5단계 색상 토큰 ───────────────────────────────── */
+:root {
+  --hm-0: #e8f5e9;        /* 학습 없음 (아주 연한 민트) */
+  --hm-1: #c8e6c9;        /* ~30분 (연한 녹색) */
+  --hm-2: #81c784;        /* ~1시간 (미디엄 녹색) */
+  --hm-3: #43a047;        /* ~2시간 (진한 녹색) */
+  --hm-4: #1b5e20;        /* 2시간+ (딥 그린) */
+}
+
+/* ── 페이지 래퍼 ─────────────────────────────────────────── */
+.monthly-report {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ── 헤더 ────────────────────────────────────────────────── */
+.monthly-report__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.monthly-report__eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.monthly-report__head h2 {
+  margin: 0.2rem 0 0;
+  font-size: 1.7rem;
+  font-family: var(--font-brand);
+  color: var(--color-text);
+}
+
+/* ── 월 네비게이션 ───────────────────────────────────────── */
+.monthly-report__nav {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.monthly-report__nav-btn {
+  padding: 0.35rem 0.9rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.monthly-report__nav-btn:hover:not(:disabled) {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+.monthly-report__nav-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* ── 오류 배너 ───────────────────────────────────────────── */
+.monthly-report__error-banner {
+  padding: 0.5rem 0.75rem;
+  background: #fff3f3;
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+}
+
+/* ── KPI 4종 ─────────────────────────────────────────────── */
+.monthly-report__kpi {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+.monthly-report__kpi-card.lh-card {
+  text-align: center;
+}
+
+.monthly-report__kpi-card .lh-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: var(--space-md) var(--space-sm);
+}
+
+.monthly-report__kpi-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.monthly-report__kpi-card small {
+  font-size: 0.76rem;
+  letter-spacing: 0.03em;
+  color: var(--color-muted);
+}
+
+.monthly-report__kpi-val {
+  font-size: 1.45rem;
+  font-family: var(--font-brand);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* ── 메인 2컬럼 ──────────────────────────────────────────── */
+.monthly-report__body {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+/* ── 히트맵 카드 ─────────────────────────────────────────── */
+.monthly-report__heatmap-card {
+  /* 카드가 히트맵을 꽉 채우도록 */
+}
+
+/* 범례 */
+.monthly-report__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: var(--space-md);
+}
+
+.monthly-report__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.monthly-report__legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.monthly-report__legend-text {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+}
+
+/* 히트맵 그리드 */
+.monthly-report__heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.monthly-report__heatmap-weekday {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  padding-bottom: 4px;
+}
+
+.monthly-report__heatmap-cell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hm-0);
+  cursor: default;
+  transition: transform 0.1s;
+  position: relative;
+}
+
+.monthly-report__heatmap-cell:hover:not(.monthly-report__heatmap-cell--empty) {
+  transform: scale(1.12);
+  z-index: 1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+.monthly-report__heatmap-cell--empty {
+  background: transparent;
+}
+
+.monthly-report__heatmap-day {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-text);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* ── 오른쪽 사이드 ───────────────────────────────────────── */
+.monthly-report__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ── 도넛 차트 ───────────────────────────────────────────── */
+.mr-donut-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.mr-donut {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.2);
+}
+
+.mr-donut__hole {
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.mr-donut__pct {
+  font-size: 1.6rem;
+  font-family: var(--font-brand);
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.mr-donut__label {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.mr-donut__sub {
+  font-size: 0.78rem;
+  text-align: center;
+  margin: 0;
+}
+
+/* ── 성장 요약 ───────────────────────────────────────────── */
+.monthly-report__growth-list {
+  list-style: none;
+  margin: 0 0 var(--space-md);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.monthly-report__growth-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+}
+
+.monthly-report__score {
+  color: var(--color-primary);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.monthly-report__progress-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.monthly-report__progress-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+}
+
+.monthly-report__progress-wrap small {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+}
+
+/* ── 바 차트 (하단 전체 폭) ──────────────────────────────── */
+.monthly-report__bar-card {
+  /* 전체 폭 차지 */
+}
+
+.monthly-report__bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 120px;
+  padding-bottom: 1.6rem;
+  position: relative;
+  overflow-x: auto;
+}
+
+.monthly-report__bar-item {
+  flex: 1;
+  min-width: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 3px;
+  position: relative;
+}
+
+.monthly-report__bar-item:hover .monthly-report__bar-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.monthly-report__bar-tooltip {
+  position: absolute;
+  top: -1.6rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--color-text);
+  color: #fff;
+  font-size: 0.65rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 10;
+}
+
+.monthly-report__bar {
+  width: 100%;
+  min-height: 4px;
+  background: linear-gradient(to top, var(--color-accent-strong), var(--color-accent));
+  border-radius: 3px 3px 0 0;
+  transition: height 0.4s ease;
+}
+
+.monthly-report__bar-label {
+  font-size: 0.65rem;
+  color: var(--color-muted);
+  white-space: nowrap;
+  position: absolute;
+  bottom: 0;
+}
+
+.monthly-report__bar-hint {
+  margin: var(--space-sm) 0 0;
+  font-size: 0.78rem;
+  text-align: right;
+}
