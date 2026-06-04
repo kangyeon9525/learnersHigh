@@ -40,6 +40,9 @@ Thumbs.db
 .cursor/mcp.json
 .cursor/*.local.*
 
+# Vercel
+.vercel
+
 # Misc
 *.local
 .cache/
